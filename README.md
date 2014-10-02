@@ -14,6 +14,8 @@ Add Interactor to your `composer.json` file and run `composer update`. See [Pack
 "deefour/interactor": "~0.1@dev"
 ```
 
+**`>=PHP5.5.0` is required.**
+
 ## What is an Interactor
 
 An interactor is a simple, single-purpose object.
