@@ -10,7 +10,7 @@ Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://
 
 Add Interactor to your `composer.json` file and run `composer update`. See [Packagist](https://packagist.org/packages/deefour/Interactor) for specific versions.
 
-```json
+```
 "deefour/interactor": "~0.1@dev"
 ```
 
@@ -192,7 +192,7 @@ class CarsController extends Controller {
 }
 ```
 
-Passing a context is optional. If omitted from the `interactor()` method call, the `GeneratorTrait` will try to determine which context object to create, and try instantiating it with information from the request object.
+**(Coming Soon!)** Passing a context is optional. If omitted from the `interactor()` method call, the `GeneratorTrait` will try to determine which context object to create, and try instantiating it with information from the request object.
 
 This means the above example could be refactored further. This example also moves the trait into a new `App\Http\Controllers\BaseController` which makes the `interactor()` method available to all controllers at once.
 
