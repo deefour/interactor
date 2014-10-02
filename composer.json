@@ -1,0 +1,24 @@
+{
+    "name": "deefour/interactor",
+    "description": "Simple Service Objects",
+    "require": {
+        "phpspec/phpspec": "~2.1@dev",
+        "illuminate/support": "~5.0@dev"
+    },
+    "require-dev": {
+      "illuminate/container": "~5.0@dev"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jason Daly",
+            "email": "jason@deefour.me"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+      "psr-4": {
+          "Deefour\\": "src"
+        }
+    }
+}
