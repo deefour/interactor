@@ -141,7 +141,7 @@ if ($context->ok()) {
 
 There are two traits that can be used in Laravel development.
 
-#### `Deefour\Interactor\Traits\GeneratorTrait`
+##### `Deefour\Interactor\Traits\GeneratorTrait`
 
 When used in a controller, exposes an `interactor()` method.
 
@@ -149,7 +149,7 @@ When used in a controller, exposes an `interactor()` method.
 use Deefour\Interactor\Traits\GeneratorTrait;
 ```
 
-#### `Deefour\Interactor\Traits\ContainerTrait`
+##### `Deefour\Interactor\Traits\ContainerTrait`
 
 When used in an interactor; exposes a `user()` method and provides access to Laravel's [IoC container](http://laravel.com/docs/master/container).
 
@@ -219,7 +219,7 @@ class CarsController extends BaseController {
 
 ## Contribute
 
-- Issue Tracker: https://github.com/deefour/aide/interactor
+- Issue Tracker: https://github.com/deefour/interactor
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
