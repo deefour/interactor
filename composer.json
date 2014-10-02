@@ -1,11 +1,15 @@
 {
     "name": "deefour/interactor",
     "description": "Simple Service Objects",
+    "homepage": "https://github.com/deefour/interactor",
+    "keywords": "interactor, deefour, service object, dto, laravel",
+    "license": "MIT",
     "require": {
-        "phpspec/phpspec": "~2.1@dev",
+        "php": ">=5.4.0",
         "illuminate/support": "~5.0@dev"
     },
     "require-dev": {
+      "phpspec/phpspec": "~2.1@dev",
       "illuminate/container": "~5.0@dev"
     },
     "license": "MIT",
