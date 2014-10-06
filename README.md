@@ -221,7 +221,7 @@ class CarsController extends BaseController {
 
 ## Contribute
 
-- Issue Tracker: https://github.com/deefour/interactor
+- Issue Tracker: https://github.com/deefour/interactor/issues
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
