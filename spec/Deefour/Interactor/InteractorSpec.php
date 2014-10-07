@@ -76,8 +76,6 @@ class PassingContext extends \Deefour\Interactor\Context {
 
   public function __construct($foo, $bar) {
     parent::__construct(get_defined_vars());
-
-    die('OMG');
   }
 
 }
