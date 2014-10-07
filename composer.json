@@ -11,7 +11,8 @@
     },
     "require-dev": {
       "phpspec/phpspec": "~2.1@dev",
-      "illuminate/container": "~5.0@dev"
+      "illuminate/container": "~5.0@dev",
+      "illuminate/http": "~5.0@dev"
     },
     "license": "MIT",
     "authors": [

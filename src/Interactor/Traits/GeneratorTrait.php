@@ -15,13 +15,17 @@ trait GeneratorTrait {
    * dependency resolution and access to the current user object.
    *
    * @param  string  $class  The full, namespaced, class name of the interactor to create
-   * @param  \Deefour\Interactor\Context  $context
+   * @param  \Deefour\Interactor\Context  $context  [optional]
    * @return \Deefour\Interactor\Interactor
    */
-  public function interactor($class, Context $context) {
+  public function interactor($class, Context $context = null) {
+    if (is_null($context)) {
+      $context = $interactor->resolveContext();
+    }
+
     $interactor = $this->container->make($class, [ 'context' => $context ]);
 
-    $interactor->setContainer($this->container)
+    $interactor->setContainer($this->container);
                ->setAuthManager($this->container->make('auth'));
 
     return $interactor;

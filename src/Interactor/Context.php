@@ -20,7 +20,7 @@ use ReflectionClass;
  * }
  * </code>
  */
-abstract class Context extends Fluent {
+class Context extends Fluent {
 
   /**
    * Override constructor for Fluent, adding a little intelligence to determine

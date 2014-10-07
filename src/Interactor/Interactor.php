@@ -3,7 +3,6 @@
 use Deefour\Interactor\Status\Success;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Contract\Status as StatusContract;
-use Illuminate\Container\Container;
 
 abstract class Interactor {
 
@@ -30,9 +29,8 @@ abstract class Interactor {
    * @param  \Deefour\Interactor\Context  $context
    * @return void
    */
-  public function __construct(Context $context) {
-    $this->context = $context;
-    $this->status  = new Success($this->context);
+  public function __construct(Context $context = null) {
+    $this->context = $context ?: new Context;
   }
 
   /**
@@ -41,7 +39,7 @@ abstract class Interactor {
    * @return \Deefour\Interactor\Contract\Status
    */
   public function status() {
-    return $this->status;
+    return $this->status ?: new Success($this->context);
   }
 
   /**
@@ -54,13 +52,25 @@ abstract class Interactor {
   }
 
   /**
+   * Setter for the context object on the interactor
+   *
+   * @param  \Deefour\Interactor\Context  $context
+   * @return \Deefour\Interactor\Interactor
+   */
+  public function setContext(Context $context) {
+    $this->context = $context;
+
+    return $this;
+  }
+
+  /**
    * Quick access to check if the state of the interactor is still condisered
    * 'passing'.
    *
    * @return boolean
    */
   public function ok() {
-    return $this->status instanceof Success;
+    return $this->status() instanceof Success;
   }
 
 

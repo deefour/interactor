@@ -194,7 +194,7 @@ class CarsController extends Controller {
 }
 ```
 
-**(Coming Soon!)** Passing a context is optional. If omitted from the `interactor()` method call, the `GeneratorTrait` will try to determine which context object to create, and try instantiating it with information from the request object.
+Passing a context is optional. If omitted from the `interactor()` method call, the `GeneratorTrait` will try to determine which context object to create, and try instantiating it with information from the request object.
 
 This means the above example could be refactored further. This example also moves the trait into a new `App\Http\Controllers\BaseController` which makes the `interactor()` method available to all controllers at once.
 
@@ -217,7 +217,25 @@ class CarsController extends BaseController {
 
 }
 ```
-*__Note:__ A `Deefour\Interactor\Exception\BadContext` exception will be thrown if the context object could not be determined or instantiated.*
+
+#### Automatic Context Resolution Details
+
+Given a `App\Interactors\Car\Create` class, the resolution will look for either of the following classes.
+
+ - `App\Interactors\Car\CreateContext`
+ - `App\Contexts\Car\Create`
+
+A `Deefour\Interactor\Exception\ContextResolution` exception will be thrown if the context object could not be determined or instantiated.
+
+The existing context object will be instantiated through Laravel's IoC container. Constructor arguments that are not type-hinted will have the request parameter with the same name as the argument pulled from Laravel's `Request` object. For example
+
+```php
+public function __construct($make, $model, CarPolicy $policy) {
+    // ...
+}
+```
+
+This will fetch `'make'` and `'model'` from the request object, passing each value into the constructor's respective arguments. An attempt will be made to resolve the `CarPolicy` argument through Laravel's IoC container.
 
 ## Contribute
 
