@@ -129,13 +129,14 @@ Finally, inside a controller, lets instantiate the interactor, passing in the bu
 
 ```php
 public function create(CreateRequest $request) {
-$context    = new CreateCarContext($request->get('make'), $request->get('model'));
-$interactor = new CreateCar($context)->perform();
+  $context    = new CreateCarContext($request->get('make'), $request->get('model'));
+  $interactor = new CreateCar($context)->perform();
 
-if ($context->ok()) {
-  echo 'Wow! Nice new ' . $context->car->make;
-} else {
-  echo 'ERROR: ' . $interactor->status()->error();
+  if ($context->ok()) {
+    echo 'Wow! Nice new ' . $context->car->make;
+  } else {
+    echo 'ERROR: ' . $interactor->status()->error();
+  }
 }
 ```
 
