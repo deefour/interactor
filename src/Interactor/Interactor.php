@@ -3,6 +3,7 @@
 use Deefour\Interactor\Status\Success;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Contract\Status as StatusContract;
+use ReflectionMethod;
 
 abstract class Interactor {
 
@@ -105,7 +106,7 @@ abstract class Interactor {
 
 
   public function __get($arg) {
-    if (method_exists($this, $arg)) {
+    if (method_exists($this, $arg) and (new ReflectionMethod($this, $arg))->isPublic()) {
       return call_user_func([$this, $arg]);
     }
 
