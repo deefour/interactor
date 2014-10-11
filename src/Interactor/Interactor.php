@@ -104,6 +104,16 @@ abstract class Interactor {
 
 
 
+  public function __get($arg) {
+    if (method_exists($this, $arg)) {
+      return call_user_func([$this, $arg]);
+    }
+
+    return null;
+  }
+
+
+
   /**
    * Process the business logic this interactor exists to handle, using the bound
    * context for support.

@@ -48,6 +48,14 @@ class InteractorSpec extends ObjectBehavior {
     $this->context()->shouldReturnAnInstanceOf('spec\Deefour\Interactor\PassingContext');
   }
 
+  function it_allows_access_to_public_methods_via_properties() {
+    $this->__get('ok')->shouldReturn(true);
+  }
+
+  function it_returns_null_for_unknown_properties() {
+    $this->__get('asdf')->shouldReturn(null);
+  }
+
 }
 
 
