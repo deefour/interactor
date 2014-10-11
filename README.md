@@ -154,7 +154,7 @@ use Deefour\Interactor\Traits\GeneratorTrait;
 
 ##### `Deefour\Interactor\Traits\ContainerTrait`
 
-When used in an interactor; exposes a `user()` method and provides access to Laravel's [IoC container](http://laravel.com/docs/master/container).
+When used in an interactor, exposes a `user()` method and provides access to Laravel's [IoC container](http://laravel.com/docs/master/container).
 
 ```php
 use Deefour\Interactor\Traits\GeneratorTrait;
