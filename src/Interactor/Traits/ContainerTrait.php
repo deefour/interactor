@@ -90,7 +90,7 @@ trait ContainerTrait {
    * @return \App\User
    */
   protected function user() {
-    return $this->auth()->user();
+    return $this->auth->user();
   }
 
   /**
