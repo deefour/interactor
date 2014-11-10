@@ -62,7 +62,7 @@ class Context extends Fluent {
     $reflection  = new ReflectionClass(static::class);
     $constructor = $reflection->getMethod('__construct');
 
-    return static::class !== $constructor->class;
+    return self::class !== $constructor->class;
   }
 
 }
