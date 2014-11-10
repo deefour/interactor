@@ -25,7 +25,7 @@ trait GeneratorTrait {
 
     $interactor = $this->container->make($class, [ 'context' => $context ]);
 
-    $interactor->setContainer($this->container);
+    $interactor->setContainer($this->container)
                ->setAuthManager($this->container->make('auth'));
 
     return $interactor;
