@@ -21,7 +21,7 @@ class Error extends Status {
    *
    * @param  \Deefour\Interactor\Context  $context
    * @param  string  $error  [optional]
-   * @return void
+   * @return \Deefour\Interactor\Contract\Status
    */
   public function __construct(Context $context, $error = null) {
     $this->error   = $error;

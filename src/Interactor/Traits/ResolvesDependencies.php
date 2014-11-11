@@ -3,7 +3,6 @@
 use Deefour\Interactor\Exception\ContextResolution as ContextResolutionException;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
-
 use ReflectionClass;
 
 /**
