@@ -75,7 +75,7 @@ trait ResolvesDependencies {
       $iocParams[$param] = $request->get($param, null);
     }
 
-    $this->setContext($this->container->make($contextName));
+    $this->context = $this->container->make($contextName);
 
     return $this;
   }
