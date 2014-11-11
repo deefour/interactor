@@ -60,7 +60,7 @@ $this->fail();
 
 $this->ok(); // false
 
-echo get_class($this->context()); // 'Deefour\Interactor\Status\Error'
+echo get_class($this->status()); // 'Deefour\Interactor\Status\Error'
 ```
 
 ## An Example
