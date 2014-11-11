@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/deefour/interactor.svg)](https://travis-ci.org/deefour/interactor)
 [![Packagist Version](http://img.shields.io/packagist/v/deefour/interactor.svg)](https://packagist.org/packages/deefour/interactor)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/deefour/interactor/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/deefour/interactor/?branch=master)
 
 Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://github.com/collectiveidea/interactor).
 
