@@ -34,7 +34,6 @@ class InteractorSpec extends ObjectBehavior {
 
   function it_resolves_context_from_interactor_name(Container $container, PassingContext $context, Request $request) {
     $container->make('spec\Deefour\Interactor\PassingContext')->willReturn($context);
-
     $container->make('request')->willReturn($request);
 
     $request->get('foo', null)->willReturn('FOO');
@@ -42,8 +41,7 @@ class InteractorSpec extends ObjectBehavior {
 
     $this->beAnInstanceOf('spec\Deefour\Interactor\PassingInteractor');
 
-    $this->setContainer($container)
-         ->resolveContext();
+    $this->setContainer($container)->resolveContext();
 
     $this->context()->shouldReturnAnInstanceOf('spec\Deefour\Interactor\PassingContext');
   }
