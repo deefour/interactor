@@ -14,21 +14,20 @@ trait MakesInteractors {
    * context object, as well as Laravel's IoC container and AuthManager for easy
    * dependency resolution and access to the current user object.
    *
-   * @param  string  $class  The full, namespaced, class name of the interactor to create
+   * @param  string  $name  The full, namespaced, class name of the interactor to create
    * @param  \Deefour\Interactor\Context  $context  [optional]
    * @return \Deefour\Interactor\Interactor
    */
-  public function interactor($class, Context $context = null) {
-    $container = app();
-
-    if (is_null($context)) {
-      $context = $interactor->resolveContext();
-    }
-
-    $interactor = $container->make($class, [ 'context' => $context ]);
+  public function interactor($name, Context $context = null) {
+    $container  = app();
+    $interactor = new $name($context);
 
     $interactor->setContainer($container)
                ->setAuthManager($container->make('auth'));
+
+    if ( ! $interactor->context()) {
+      $interactor->resolveContext();
+    }
 
     return $interactor;
   }

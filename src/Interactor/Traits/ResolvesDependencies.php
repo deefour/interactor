@@ -63,6 +63,7 @@ trait ResolvesDependencies {
     $reflection  = new ReflectionClass($contextName);
     $parameters  = $reflection->getConstructor()->getParameters();
     $iocParams   = [];
+    $request     = $this->container->make('request');
 
     foreach ($parameters as $parameter) {
       $param = $parameter->name;
@@ -71,27 +72,15 @@ trait ResolvesDependencies {
         continue;
       }
 
-      $iocParams[$param] = $this->container->make('request')->get($param, null);
+      $iocParams[$param] = $request->get($param, null);
     }
 
-    $context = $this->container->make($contextName);
-
-    $this->setContext($context);
+    $this->setContext($this->container->make($contextName));
 
     return $this;
   }
 
 
-
-  /**
-   * Convenient access to the currently-logged-in user object within Laravel's
-   * configured AuthManager.
-   *
-   * @return \App\User
-   */
-  protected function user() {
-    return $this->auth->user();
-  }
 
   /**
    * Tries to resolve a context for the interactor. The lookup happens in the
@@ -123,6 +112,18 @@ trait ResolvesDependencies {
     }
 
     throw new ContextResolutionException(sprintf('Context object for interactor `%s` could not be resolved.', static::class));
+  }
+
+
+
+  /**
+   * Convenient access to the currently-logged-in user object within Laravel's
+   * configured AuthManager.
+   *
+   * @return \App\User
+   */
+  protected function user() {
+    return $this->auth->user();
   }
 
 }
