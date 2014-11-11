@@ -1,6 +1,7 @@
 <?php namespace Deefour\Interactor\Traits;
 
 use Deefour\Interactor\Context;
+use Illuminate\Support\Facades\Facade;
 
 /**
  * Intended to be used within a Laravel controller, provides a quick way to
@@ -19,7 +20,7 @@ trait MakesInteractors {
    * @return \Deefour\Interactor\Interactor
    */
   public function interactor($name, Context $context = null) {
-    $container  = app();
+    $container  = Facade::getFacadeApplication();
     $interactor = new $name($context);
 
     $interactor->setContainer($container)
