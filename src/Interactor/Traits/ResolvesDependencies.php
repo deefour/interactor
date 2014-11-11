@@ -1,5 +1,6 @@
 <?php namespace Deefour\Interactor\Traits;
 
+use Deefour\Interactor\Context;
 use Deefour\Interactor\Exception\ContextResolution as ContextResolutionException;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
@@ -75,7 +76,7 @@ trait ResolvesDependencies {
       $iocParams[$param] = $request->get($param, null);
     }
 
-    $this->context = $this->container->make($contextName);
+    $this->setContext($this->container->make($contextName));
 
     return $this;
   }
@@ -125,5 +126,15 @@ trait ResolvesDependencies {
   protected function user() {
     return $this->auth->user();
   }
+
+
+
+  /**
+   * Setter for the context object on the interactor
+   *
+   * @param  \Deefour\Interactor\Context  $context
+   * @return \Deefour\Interactor\Interactor
+   */
+  public abstract function setContext(Context $context);
 
 }
