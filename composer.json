@@ -1,30 +1,30 @@
 {
-    "name": "deefour/interactor",
-    "version": "0.2.0",
-    "description": "Simple Service Objects",
-    "homepage": "https://github.com/deefour/interactor",
-    "keywords": ["interactor", "deefour", "service object", "dto", "laravel"],
-    "license": "MIT",
-    "require": {
-        "php": ">=5.5.0",
-        "illuminate/support": "~5.0@dev"
-    },
-    "require-dev": {
-      "phpspec/phpspec": "~2.1@dev",
-      "illuminate/container": "~5.0@dev",
-      "illuminate/http": "~5.0@dev"
-    },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Jason Daly",
-            "email": "jason@deefour.me"
-        }
-    ],
-    "minimum-stability": "dev",
-    "autoload": {
-      "psr-4": {
-          "Deefour\\": "src"
-        }
+  "name": "deefour/interactor",
+  "version": "0.2.0",
+  "description": "Simple Service Objects",
+  "homepage": "https://github.com/deefour/interactor",
+  "keywords": ["interactor", "deefour", "service object", "dto", "laravel"],
+  "license": "MIT",
+  "require": {
+    "php": ">=5.5.0",
+    "illuminate/support": "~5.0@dev"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "~2.1@dev",
+    "illuminate/container": "~5.0@dev",
+    "illuminate/http": "~5.0@dev"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jason Daly",
+      "email": "jason@deefour.me"
     }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+        "Deefour\\": "src"
+      }
+  }
 }
