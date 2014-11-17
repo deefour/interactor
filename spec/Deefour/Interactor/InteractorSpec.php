@@ -86,4 +86,4 @@ class PassingContext extends \Deefour\Interactor\Context {
 
 }
 
-class InteractorContext extends \Deefour\Interactor\Context {}
+class InteractorContext extends \Deefour\Interactor\Context { }
