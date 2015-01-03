@@ -85,7 +85,7 @@ trait ResolvesContext {
    */
   protected function resolveContextName($context = null) {
     if ($context instanceof Context) {
-      return $context::class;
+      return get_class($context);
     }
 
     if (class_exists($context)) {
