@@ -7,12 +7,12 @@
   "license": "MIT",
   "require": {
     "php": ">=5.5.0",
-    "illuminate/support": "~5.0@dev"
+    "illuminate/support": "~5.0"
   },
   "require-dev": {
-    "phpspec/phpspec": "~2.1@dev",
-    "illuminate/container": "~5.0@dev",
-    "illuminate/http": "~5.0@dev"
+    "phpspec/phpspec": "2.0.1",
+    "illuminate/container": "~5.0",
+    "illuminate/http": "~5.0"
   },
   "license": "MIT",
   "authors": [
