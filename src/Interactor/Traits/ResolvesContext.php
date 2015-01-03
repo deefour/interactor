@@ -11,7 +11,7 @@ use ReflectionClass;
  * objects a little more "Laravel friendly" by providing access to the IoC
  * container and easy access to the current user object
  */
-trait ResolvesDependencies {
+trait ResolvesContext {
 
   protected $auth;
 
@@ -22,19 +22,6 @@ trait ResolvesDependencies {
    */
   protected $container;
 
-
-
-  /**
-   * Setter for the authentication backend configured through Laravel's IoC container
-   *
-   * @param  \Illuminate\Auth\AuthManager
-   * @return \Deefour\Interactor\Interactor
-   */
-  public function setAuthManager(AuthManager $auth) {
-    $this->auth = $auth;
-
-    return $this;
-  }
 
   /**
    * Setter for the container instance used to resolve dependencies.
@@ -76,7 +63,7 @@ trait ResolvesDependencies {
       $iocParams[$param] = $request->get($param, null);
     }
 
-    $this->setContext($this->container->make($contextName));
+    $this->setContext($this->container->make($contextName, $iocParams));
 
     return $this;
   }
@@ -113,18 +100,6 @@ trait ResolvesDependencies {
     }
 
     throw new ContextResolutionException(sprintf('Context object for interactor `%s` could not be resolved.', static::class));
-  }
-
-
-
-  /**
-   * Convenient access to the currently-logged-in user object within Laravel's
-   * configured AuthManager.
-   *
-   * @return \App\User
-   */
-  protected function user() {
-    return $this->auth->user();
   }
 
 

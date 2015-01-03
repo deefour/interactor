@@ -70,7 +70,7 @@ class FailingInteractor extends \Deefour\Interactor\Interactor {
 
 class PassingInteractor extends \Deefour\Interactor\Interactor {
 
-  use \Deefour\Interactor\Traits\ResolvesDependencies;
+  use \Deefour\Interactor\Traits\ResolvesContext;
 
   public function perform() {
     return $this;

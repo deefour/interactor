@@ -144,20 +144,20 @@ public function create(CreateRequest $request) {
 
 There are two traits that can be used in Laravel development.
 
-##### `Deefour\Interactor\Traits\MakesInteractors`
+##### `Deefour\Interactor\Traits\PerformsInteractors`
 
 When used in a controller, exposes an `interactor()` method.
 
 ```php
-use Deefour\Interactor\Traits\MakesInteractors;
+use Deefour\Interactor\Traits\PerformsInteractors;
 ```
 
-##### `Deefour\Interactor\Traits\ResolvesDependencies`
+##### `Deefour\Interactor\Traits\ResolvesContext`
 
 When used in an interactor, exposes a `user()` method and provides access to Laravel's [IoC container](http://laravel.com/docs/master/container).
 
 ```php
-use Deefour\Interactor\Traits\ResolvesDependencies;
+use Deefour\Interactor\Traits\ResolvesContext;
 ```
 
 #### Refactoring the Previous Example
@@ -172,7 +172,7 @@ use App\Interactors\Car\Create as CreateInteractor;
 
 class CarsController extends Controller {
 
-  use Deefour\Interactor\Traits\MakesInteractors;
+  use Deefour\Interactor\Traits\PerformsInteractors;
 
   // ...
 
@@ -195,7 +195,7 @@ class CarsController extends Controller {
 }
 ```
 
-Passing a context is optional. If omitted from the `interactor()` method call, the `MakesInteractors` will try to determine which context object to create, and try instantiating it with information from the request object.
+Passing a context is optional. If omitted from the `interactor()` method call, the `PerformsInteractors` will try to determine which context object to create, and try instantiating it with information from the request object.
 
 This means the above example could be refactored further. This example also moves the trait into a new `App\Http\Controllers\BaseController` which makes the `interactor()` method available to all controllers at once.
 
