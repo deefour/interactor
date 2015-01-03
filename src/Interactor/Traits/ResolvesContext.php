@@ -44,10 +44,11 @@ trait ResolvesContext {
    * as well.
    *
    * @see \Deefour\Interactor\Traits\MakesInteractors
+   * @param  mixed  $context  [optional]
    * @return \Deefour\Interactor\Context
    */
-  public function resolveContext() {
-    $contextName = $this->resolveContextName();
+  public function resolveContext($context = null) {
+    $contextName = $this->resolveContextName($context);
     $reflection  = new ReflectionClass($contextName);
     $parameters  = $reflection->getConstructor()->getParameters();
     $iocParams   = [];
@@ -79,9 +80,18 @@ trait ResolvesContext {
    *  2. Try to replace an `Interactor` namespace for `Context`
    *
    * @throws \Deefour\Interactor\Exception\ContextResolution
+   * @param  mixed  $context  [optional]
    * @return string
    */
-  protected function resolveContextName() {
+  protected function resolveContextName($context = null) {
+    if ($context instanceof Context) {
+      return $context::class;
+    }
+
+    if (class_exists($context)) {
+      return $context;
+    }
+
     $interactorName = static::class;
     $contextName    = null;
 

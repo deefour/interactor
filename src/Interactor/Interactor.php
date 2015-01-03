@@ -1,5 +1,6 @@
 <?php namespace Deefour\Interactor;
 
+use Deefour\Interactor\Exception\ContextResolution as ContextResolutionException;
 use Deefour\Interactor\Status\Success;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Contract\Status as StatusContract;
@@ -58,10 +59,8 @@ abstract class Interactor {
    *
    * @return \Deefour\Interactor\Interactor
    */
-  public function handle(Context $context = null) {
-    if ($context) {
-      $this->setContext($context);
-    }
+  public function handle(Context $context) {
+    $this->setContext($context);
 
     return $this->perform() ?: $this;
   }
@@ -73,6 +72,10 @@ abstract class Interactor {
    * @return \Deefour\Interactor\Interactor
    */
   public function setContext(Context $context) {
+    if ( ! $this->isValidContext($context)) {
+      throw new ContextResolutionException(sprintf('A context class of type `%s` is required for this interactor.', $this->contextClass()));
+    }
+
     $this->context = $context;
 
     return $this;
@@ -115,6 +118,25 @@ abstract class Interactor {
     $this->setStatus($status);
 
     return $this;
+  }
+
+  protected function contextClass() {
+    $constructor = new ReflectionMethod($this, '__construct');
+    $parameters  = $constructor->getParameters();
+
+    foreach ($parameters as $parameter) {
+      $className = $parameter->getClass()->name;
+
+      if (is_a($className, Context::class, true)) {
+        return $className;
+      }
+    }
+
+    throw new ContextResolutionException('No context is specified on the `__construct()` method for this class.');
+  }
+
+  protected function isValidContext($context) {
+    return $this->contextClass() === get_class($context);
   }
 
 
