@@ -54,6 +54,11 @@ class InteractorSpec extends ObjectBehavior {
     $this->__get('asdf')->shouldReturn(null);
   }
 
+  function it_sets_context_and_performs_interactor_via_handle($context) {
+    $this->handle($context)->shouldReturn($this);
+    $this->ok()->shouldReturn(false);
+  }
+
 }
 
 

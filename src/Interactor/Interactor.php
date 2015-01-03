@@ -53,6 +53,20 @@ abstract class Interactor {
   }
 
   /**
+   * Laravel-compatible method for setting the context (a command or event, for
+   * example), and performing the interactor all at once.
+   *
+   * @return \Deefour\Interactor\Interactor
+   */
+  public function handle(Context $context = null) {
+    if ($context) {
+      $this->setContext($context);
+    }
+
+    return $this->perform() ?: $this;
+  }
+
+  /**
    * Setter for the context object on the interactor
    *
    * @param  \Deefour\Interactor\Context  $context
