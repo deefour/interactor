@@ -207,7 +207,7 @@ use App\Interactors\Car\Create as CreateInteractor;
 class CarsController extends BaseController {
 
   public function create(CreateRequest $request) {
-    $i = $this->interactor(CreateInteractor::class)->perform();
+    $i = $this->perform(CreateInteractor::class);
 
     if ($i->ok()) {
       echo 'Wow! Nice new ' . $i->context()->car->make;
