@@ -280,9 +280,13 @@ class CarController extends BaseController {
 
 #### 0.3.0 - January 3, 2015
 
- - Refactor, striping out Illuminate support.
+ - Refactor, striping out dependency on and support for Illuminate components.
  - Compatibility changes to work easily with Laravel 5's new command bus and event handlers.
  - Inverting resolution lookup; contexts now resolve interactors instead of the other way around.
+
+#### 0.2.0 - October 7, 2014
+
+ - Automatic context resolution from instantiated interactor.
 
 #### 0.1.0 - October 2, 2014
 
