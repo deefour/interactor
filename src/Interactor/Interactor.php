@@ -126,7 +126,7 @@ abstract class Interactor {
    * Determine the FQCN of the context class type-hinted on the constructor's
    * method signature.
    *
-   * @throws Deefour\Interactor\Exception\ContextResolution;
+   * @throws \Deefour\Interactor\Exception\ContextResolution;
    * @return string
    */
   protected function contextClass() {
@@ -149,7 +149,7 @@ abstract class Interactor {
    * the type-hinted context object specified in the constructor's method signature
    * for this interactor.
    *
-   * @param  Deefour\Interactor\Context  $context
+   * @param  \Deefour\Interactor\Context  $context
    * @return boolean
    */
   protected function isValidContext($context) {
