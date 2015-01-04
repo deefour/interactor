@@ -136,7 +136,7 @@ abstract class Interactor {
   }
 
   protected function isValidContext($context) {
-    return $this->contextClass() === get_class($context);
+    return is_a($context, $this->contextClass());
   }
 
 
