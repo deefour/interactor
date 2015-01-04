@@ -13,7 +13,7 @@ trait PerformsInteractors {
    * Performs the interactor.
    *
    * @param  \Deefour\Interactor\Context  $context
-   * @return \Deefour\
+   * @return \Deefour\Interactor\Interactor
    */
   public function perform(Context $context) {
     $interactor = $this->interactor($context);

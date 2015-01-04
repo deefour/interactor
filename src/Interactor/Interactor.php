@@ -122,6 +122,13 @@ abstract class Interactor {
     return $this;
   }
 
+  /**
+   * Determine the FQCN of the context class type-hinted on the constructor's
+   * method signature.
+   *
+   * @throws Deefour\Interactor\Exception\ContextResolution;
+   * @return string
+   */
   protected function contextClass() {
     $constructor = new ReflectionMethod($this, '__construct');
     $parameters  = $constructor->getParameters();
@@ -137,12 +144,29 @@ abstract class Interactor {
     throw new ContextResolutionException('No context is specified on the `__construct()` method for this class.');
   }
 
+  /**
+   * Boolean check whether the passed object is an instance of or sublass of
+   * the type-hinted context object specified in the constructor's method signature
+   * for this interactor.
+   *
+   * @param  object  $context
+   * @return boolean
+   */
   protected function isValidContext($context) {
     return is_a($context, $this->contextClass());
   }
 
 
-
+  /**
+   * Magic method invocation via property access for public methods.
+   *
+   * Example
+   *
+   *   $interactor->ok; //=> true
+   *
+   * @param  string  $arg
+   * @return mixed
+   */
   public function __get($arg) {
     if (method_exists($this, $arg) and (new ReflectionMethod($this, $arg))->isPublic()) {
       return call_user_func([$this, $arg]);
