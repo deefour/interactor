@@ -149,7 +149,7 @@ abstract class Interactor {
    * the type-hinted context object specified in the constructor's method signature
    * for this interactor.
    *
-   * @param  object  $context
+   * @param  Deefour\Interactor\Context  $context
    * @return boolean
    */
   protected function isValidContext($context) {
