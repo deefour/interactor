@@ -62,7 +62,9 @@ abstract class Interactor {
   public function handle(Context $context) {
     $this->setContext($context);
 
-    return $this->perform() ?: $this;
+    $this->perform();
+
+    return $this;
   }
 
   /**

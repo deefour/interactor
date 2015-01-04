@@ -24,13 +24,13 @@ Interactors are used to encapsulate your application's [business logic](http://e
 
 ## Context
 
-An interactor is given a context. The context contains everything the interactor needs to do its work.
+An interactor runs based on a given context. The context contains everything the interactor needs to do its work.
 
-When an interactor does its single purpose, it may affect its given context.
+When an interactor performs its single purpose, it may affect the passed context.
 
 ### Adding to the Context
 
-As an interactor runs it can add information to the context.
+As an interactor runs it can add information to the context. Within the scope of an interactor this can be achieved via a fluent interface on the context object.
 
 ```php
 $car = new Car;
@@ -40,8 +40,7 @@ $this->context()->car = $car;
 
 ## Status
 
-An interactor carries a status object. By default there is a `Success` status and an
-`Error` status. Interactors are given a successful status to start.
+An interactor carries a status object. By default there is a `Success` status and an `Error` status. Interactors are given a successful status to start.
 
 ### Failing the Interactor
 
@@ -49,6 +48,10 @@ When something goes wrong in your interactor, you can flag the process as failed
 
 ```php
 $this->fail();
+
+// or
+
+$this->fail('Some explicit error message here');
 ```
 
 This swaps out the `Success` status for a new `Error` status. You can ask the interactor if its state is currently successful/passing *(not failed)*.
@@ -68,9 +71,15 @@ echo get_class($this->status()); // 'Deefour\Interactor\Status\Error'
 Lets look at an interactor to create a new `Car`.
 
 ```php
+namespace App\Interactors;
+
 use Deefour\Interactor\Interactor;
 
-class CreateCar extends Interactor {
+class CreateCarInteractor extends Interactor {
+
+  public function __construct(CreateCar $context = null) {
+    parent::__construct($context);
+  }
 
   public function perform() {
     $c = $this->context();
@@ -90,47 +99,47 @@ class CreateCar extends Interactor {
 }
 ```
 
-This interactor expects the context to have a `make` and `model` bound to it. Lets make a context object that requires these attributes.
+This interactor above has a constructor with an argument typehinted with a class that subclasses `Deefour\Interactor\Context`. This sets the expectation that the interactor will only accept a context of the specified type, even when using the public `setContext()` method after instantiation.
+
+The interactor above also expects the context to have a `make` and `model` bound to it. Lets make a context object that requires these attributes.
 
 ```php
+namespace App\Contexts;
+
 use Deefour\Interactor\Context;
 
-class CreateCarContext extends Context {
+class CreateCar extends Context {
+
+  public $make;
+
+  public $model;
 
   public function __construct($make, $model) {
-    parent::__construct(get_defined_vars());
-  }
-}
-```
-
-This will pass an array like `[ 'make' => 'Honda', 'model' => 'Accord' ]` up to the base context.
-
-> Read about [`get_defined_vars()`](http://php.net/manual/en/function.get-defined-vars.php). Internally this is fed into an `Illuminate\Support\Fluent` object, providing array and property access to `make` and `model` directly on the context object.
-
-Lets then require the interactor use this specific implementation of the context object by overriding the default constructor.
-
-```php
-use Deefour\Interactor\Interactor;
-
-class CreateCar extends Interactor {
-
-  public function __construct(CreateCarContext $context) {
-    parent::__construct($context);
-  }
-
-  public function perform() {
-    // ...
+    $this->make  = $make;
+    $this->model = $model;
   }
 
 }
 ```
 
-Finally, inside a controller, lets instantiate the interactor, passing in the built context.
+The property assignments in the constructor could alternatively be delegated back to the `Deefour\Interactor\Context` superclass via [`get_defined_vars()`](http://php.net/manual/en/function.get-defined-vars.php). This is useful for contexts with many arguments in the constructor signature.
+
+```
+public function __construct($make, $model) {
+  parent::__construct(get_defined_vars());
+}
+```
+
+This will pass an array like `[ 'make' => 'Honda', 'model' => 'Accord' ]` up to the base context where assignment to the public properties will be performed.
+
+> It's good practice to explicitly define public properties for the arguments you want exposed to your interactor.
+
+Within a controller, lets instantiate the interactor, passing in the built context.
 
 ```php
 public function create(CreateRequest $request) {
-  $context    = new CreateCarContext($request->get('make'), $request->get('model'));
-  $interactor = new CreateCar($context)->perform();
+  $context    = new CreateCar($request->get('make'), $request->get('model'));
+  $interactor = new CreateCarInteractor($context)->perform();
 
   if ($context->ok()) {
     echo 'Wow! Nice new ' . $context->car->make;
@@ -146,29 +155,21 @@ There are two traits that can be used in Laravel development.
 
 ##### `Deefour\Interactor\Traits\PerformsInteractors`
 
-When used in a controller, exposes an `interactor()` method.
+When used in a controller, exposes an `interactor()` and `perform()` method.
 
 ```php
 use Deefour\Interactor\Traits\PerformsInteractors;
 ```
 
-##### `Deefour\Interactor\Traits\ResolvesContext`
-
-When used in an interactor, exposes a `user()` method and provides access to Laravel's [IoC container](http://laravel.com/docs/master/container).
-
-```php
-use Deefour\Interactor\Traits\ResolvesContext;
-```
-
 #### Refactoring the Previous Example
 
-The `create` method from the previous example can be cleaned up slightly, using the `interactor()` method.
+The `create()` method from the previous example can be cleaned up slightly, using the `perform()` method. This will transparently instantiate the `CreateCarInteractor` and pass the context into it.
 
 ```php
 namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use App\Interactors\Car\Create as CreateInteractor;
+use App\Contexts\CreateCar;
 
 class CarsController extends Controller {
 
@@ -177,11 +178,9 @@ class CarsController extends Controller {
   // ...
 
   public function create(CreateRequest $request) {
-    $make    = $request->get('make');
-    $model   = $request->get('model');
-    $context = new CreateContext($make, $model);
+    $context = new CreateCar($request->get('make'), $request->get('model'));
 
-    $interactor = $this->interactor(CreateInteractor::class, $context)->perform();
+    $interactor = $this->interactor($context)->perform();
 
     if ($interactor->ok()) {
       echo 'Wow! Nice new ' . $context->car->make;
@@ -195,48 +194,82 @@ class CarsController extends Controller {
 }
 ```
 
-Passing a context is optional. If omitted from the `interactor()` method call, the `PerformsInteractors` will try to determine which context object to create, and try instantiating it with information from the request object.
+### Laravel 5's Command Bus and Events
 
-This means the above example could be refactored further. This example also moves the trait into a new `App\Http\Controllers\BaseController` which makes the `interactor()` method available to all controllers at once.
+Using this concept of interactors and contexts within Laravel 5's command bus and event system is simple. First, some terminology:
+
+| `Deefour\Interactor` | Laravel          |
+|----------------------|------------------|
+| Context              | Event or Command |
+| Interactor           | Handler          |
+
+Next, modify your events, commands, and handlers to extend the respective `Deefour\Interactor` classes.
+
+ - The base `App\Events\Event` and `App\Commands\Command` classes should be changed to extend `Deefour\Interactor\Context`.
+ - All event and command handlers should extend `Deefour\Interactor\Interactor`.
+
+That's it. Treat your handlers within Laravel as you would plain interactors outside of Laravel.
+
+ 1. Typehint the context in the constructor.
+ 2. Define a `perform()` method.
+
+> __Note:__ You should only define Laravels' expected `handle()` method if you understand the consequences. `Deefour\Interactor\Interactor` defines a generic, Laravel-compatible `handle()` method that accepts any `Deefour\Interactor\Context` subclass and sets the interactor up with it for you.
+
+#### A Command Handler Example
+
+Here's an implementation of the `CreateCarInteractor` example above using Laravel 5's command handlers.
 
 ```php
-namespace App\Http\Controllers;
+namespace App\Handlers\Commands;
 
-use App\Interactors\Car\Create as CreateInteractor;
+use App\Commands\CreateCar;
+use Illuminate\Queue\InteractsWithQueue;
+use Deefour\Interactor\Interactor;
 
-class CarsController extends BaseController {
+class CreateCarHandler extends Interactor {
 
-  public function create(CreateRequest $request) {
-    $i = $this->perform(CreateInteractor::class);
+  /**
+   * Initialize the command handler.
+   *
+   * @param  CreateCar  $command  [optional]
+   */
+  public function __construct(CreateCar $context = null) {
+    // ...
+  }
 
-    if ($i->ok()) {
-      echo 'Wow! Nice new ' . $i->context()->car->make;
-    } else {
-      echo 'ERROR: ' . $i->status()->error();
-    }
+  /**
+   * Handle the command.
+   *
+   * @return void
+   */
+  public function perform() {
+    // Do something here...
   }
 
 }
 ```
 
-#### Automatic Context Resolution Details
+Within a controller action the `CreateCar` command can be dispatched as expected
 
-Given a `App\Interactors\Car\Create` class, the resolution will look for either of the following classes.
+```
+namespace App\Http\Controllers;
 
- - `App\Interactors\Car\CreateContext`
- - `App\Contexts\Car\Create`
+use App\Commands\CreateCar;
 
-A `Deefour\Interactor\Exception\ContextResolution` exception will be thrown if the context object could not be determined or instantiated.
+class CarController extends BaseController {
 
-The existing context object will be instantiated through Laravel's IoC container. Constructor arguments that are not type-hinted will have the request parameter with the same name as the argument pulled from Laravel's `Request` object. For example
+  public function create() {
+    $i = $this->dispatch(CreateCar::class);
 
-```php
-public function __construct($make, $model, CarPolicy $policy) {
-    // ...
+    if ($i->ok()) {
+      return 'Wow! Nice new ' . $context->car->make;
+    } else {
+      return 'ERROR: ' . $interactor->status()->error();
+    }
+  }
+
 }
 ```
-
-This will fetch `'make'` and `'model'` from the request object, passing each value into the constructor's respective arguments. An attempt will be made to resolve the `CarPolicy` argument through Laravel's IoC container.
 
 ## Contribute
 
@@ -244,6 +277,12 @@ This will fetch `'make'` and `'model'` from the request object, passing each val
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+#### 0.3.0 - January 3, 2015
+
+ - Refactor, striping out Illuminate support.
+ - Compatibility changes to work easily with Laravel 5's new command bus and event handlers.
+ - Inverting resolution lookup; contexts now resolve interactors instead of the other way around.
 
 #### 0.1.0 - October 2, 2014
 

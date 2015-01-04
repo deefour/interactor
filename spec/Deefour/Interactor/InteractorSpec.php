@@ -2,8 +2,6 @@
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Illuminate\Container\Container;
-use Illuminate\Http\Request;
 
 class InteractorSpec extends ObjectBehavior {
 
@@ -30,20 +28,6 @@ class InteractorSpec extends ObjectBehavior {
 
   function it_is_not_ok_when_failure_occurs() {
     $this->perform()->ok()->shouldReturn(false);
-  }
-
-  function it_resolves_context_from_interactor_name(Container $container, PassingContext $context, Request $request) {
-    $container->make('spec\Deefour\Interactor\PassingContext', [ 'foo' => 'FOO', 'bar' => 'BAR' ])->willReturn($context);
-    $container->make('request')->willReturn($request);
-
-    $request->get('foo', null)->willReturn('FOO');
-    $request->get('bar', null)->willReturn('BAR');
-
-    $this->beAnInstanceOf('spec\Deefour\Interactor\PassingInteractor');
-
-    $this->setContainer($container)->resolveContext();
-
-    $this->context()->shouldReturnAnInstanceOf('spec\Deefour\Interactor\PassingContext');
   }
 
   function it_allows_access_to_public_methods_via_properties() {
@@ -74,8 +58,6 @@ class FailingInteractor extends \Deefour\Interactor\Interactor {
 }
 
 class PassingInteractor extends \Deefour\Interactor\Interactor {
-
-  use \Deefour\Interactor\Traits\ResolvesContext;
 
   public function perform() {
     return $this;

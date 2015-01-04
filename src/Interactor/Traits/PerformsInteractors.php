@@ -13,12 +13,11 @@ trait PerformsInteractors {
   /**
    * Performs the interactor.
    *
-   * @param  string  $name  The full, namespaced, class name of the interactor to create
-   * @param  \Deefour\Interactor\Context  $context  [optional]
+   * @param  \Deefour\Interactor\Context  $context
    * @return \Deefour\
    */
-  public function perform($name, Context $context  = null) {
-    $interactor = $this->interactor($name, $context);
+  public function perform(Context $context) {
+    $interactor = $this->interactor($context);
 
     $interactor->perform();
 
@@ -30,21 +29,13 @@ trait PerformsInteractors {
    * context object, as well as Laravel's IoC container for easy
    * dependency resolution and access to the current user object.
    *
-   * @param  string  $name  The full, namespaced, class name of the interactor to create
-   * @param  \Deefour\Interactor\Context  $context  [optional]
+   * @param  \Deefour\Interactor\Context  $context
    * @return \Deefour\Interactor\Interactor
    */
-  public function interactor($name, Context $context = null) {
-    $container  = Facade::getFacadeApplication();
-    $interactor = new $name($context);
+  public function interactor(Context $context) {
+    $interactor = str_replace('Context', 'Interactor', get_class($context) . 'Interactor');
 
-    $interactor->setContainer($container);
-
-    if ( ! $interactor->context()) {
-      $interactor->resolveContext();
-    }
-
-    return $interactor;
+    return new $interactor($context);
   }
 
 }

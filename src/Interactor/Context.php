@@ -1,6 +1,5 @@
 <?php namespace Deefour\Interactor;
 
-use Illuminate\Support\Fluent;
 use ReflectionClass;
 
 /**
@@ -20,49 +19,20 @@ use ReflectionClass;
  * }
  * </code>
  */
-class Context extends Fluent {
+class Context {
 
   /**
-   * Override constructor for Fluent, adding a little intelligence to determine
-   * if this constructor itself has been overridden by a type-hinted constructor
-   * in the class extending this abstract implementation.
-   *
    * If this constructor is overridden by the extending context object with a
    * (usually) type-hinted, specific set of arguments - as a way of defining
    * requirements for the interactor - those arguments will be available as
-   * public properties (via magic getters) through Fluent.
+   * public properties.
    *
-   * If the constructor is NOT overridden, the array handled by this abstract
-   * class' constructor will be keyed as "attributes" on the object through
-   * Fluent.
-   *
-   * The determination whether the constructor has been overridden or not is done
-   * via reflection.
-   *
-   * {@inheritdoc}
+   * @param  array  $properties  [optional]
    */
-  public function __construct($attributes = array()) {
-    if ($this->isConstructorOverridden()) {
-      $attributes = [ 'attributes' => $attributes ];
+  public function __construct(array $properties = []) {
+    foreach ($properties as $property => $value) {
+      $this->$property = $value;
     }
-
-    parent::__construct($attributes);
-  }
-
-
-
-  /**
-   * Determine if the constructor in this abstract context object has been
-   * overridden by the extending context object to defined type-hinted arguments
-   * as requirements for the interactor
-   *
-   * @return boolean
-   */
-  private function isConstructorOverridden() {
-    $reflection  = new ReflectionClass(static::class);
-    $constructor = $reflection->getMethod('__construct');
-
-    return self::class !== $constructor->class;
   }
 
 }
