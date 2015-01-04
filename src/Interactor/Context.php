@@ -1,7 +1,5 @@
 <?php namespace Deefour\Interactor;
 
-use ReflectionClass;
-
 /**
  * Abstract context object. Extends the Fluent class from illuminate/support,
  * making the creation and use of individual DTO's a breeze.

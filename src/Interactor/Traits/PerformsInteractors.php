@@ -1,7 +1,6 @@
 <?php namespace Deefour\Interactor\Traits;
 
 use Deefour\Interactor\Context;
-use Illuminate\Support\Facades\Facade;
 
 /**
  * Intended to be used within a Laravel controller, provides a quick way to
