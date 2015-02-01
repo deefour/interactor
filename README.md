@@ -162,7 +162,7 @@ public function create(Request $request) {
 
 ### Integration With Laravel 5
 
-Within Laravel 5 a command can be treated as in interactor. The constructor and `handle()` methods both have type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a command in Laravel 5 might look as follows:
+Within Laravel 5 a command can be treated as in interactor. The context should still be passed through to the constructor of the interactor. The `handle()` method has type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container) that can be leveraged. An implementation of the `CreateCar` interactor as a command in Laravel 5 might look as follows:
 
 ```php
 namespace App\Commands;
@@ -198,7 +198,7 @@ class CreateCar extends Interactor implements SelfHandling {
 }
 ```
 
-Include the `Deefour\Interactor\DispatchesInteractors` trait in your controller to use the `dispatchInteractor()` method.
+Include the `Deefour\Interactor\DispatchesInteractors` trait in your controller to use the `dispatchInteractor()` method. This will pass the interactor through to Laravel's Command Bus as it would any other Command.
 
 ```php
 namespace App\Http\Controllers;
