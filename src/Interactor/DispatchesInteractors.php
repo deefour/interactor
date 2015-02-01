@@ -28,7 +28,9 @@ trait DispatchesInteractors {
 
     try {
       $this->dispatch($interactor);
-    } catch (Failure $e) { }
+    } catch (Failure $e) {
+      // Silently fail
+    }
 
     return $interactor->context();
   }

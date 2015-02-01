@@ -21,7 +21,6 @@ class Error extends Status {
    *
    * @param  \Deefour\Interactor\Context  $context
    * @param  string  $error  [optional]
-   * @return \Deefour\Interactor\Contract\Status
    */
   public function __construct(Context $context, $error = null) {
     if ( ! is_null($error)) {

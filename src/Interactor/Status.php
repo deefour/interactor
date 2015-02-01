@@ -19,7 +19,6 @@ abstract class Status implements StatusContract, JsonSerializable {
    * Configure the status, injecting the context from the interactor
    *
    * @param  \Deefour\Interactor\Context  $context
-   * @return void
    */
   public function __construct(Context $context) {
     $this->context = $context;
