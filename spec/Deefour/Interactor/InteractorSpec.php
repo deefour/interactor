@@ -14,33 +14,15 @@ class InteractorSpec extends ObjectBehavior {
     $this->shouldHaveType('Deefour\Interactor\Interactor');
   }
 
-  function it_provides_the_status() {
-    $this->status()->shouldReturnAnInstanceOf('Deefour\Interactor\Status');
-  }
-
   function it_provides_the_context($context) {
     $this->context()->shouldReturn($context);
   }
 
-  function it_is_ok_by_default() {
-    $this->ok()->shouldReturn(true);
-  }
+  function it_sets_context_and_calls_interactor_via_handle() {
+    $context = new InteractorContext;
 
-  function it_is_not_ok_when_failure_occurs() {
-    $this->perform()->ok()->shouldReturn(false);
-  }
-
-  function it_allows_access_to_public_methods_via_properties() {
-    $this->__get('ok')->shouldReturn(true);
-  }
-
-  function it_returns_null_for_unknown_properties() {
-    $this->__get('asdf')->shouldReturn(null);
-  }
-
-  function it_sets_context_and_performs_interactor_via_handle($context) {
-    $this->handle($context)->shouldReturn($this);
-    $this->ok()->shouldReturn(false);
+    $this->handle($context)->shouldReturn($context);
+    $this->context()->ok()->shouldReturn(false);
   }
 
 }
@@ -49,8 +31,8 @@ class InteractorSpec extends ObjectBehavior {
 
 class FailingInteractor extends \Deefour\Interactor\Interactor {
 
-  public function perform() {
-    $this->fail('FAILURE');
+  public function call() {
+    $this->context()->fail('FAILURE');
 
     return $this;
   }
@@ -59,7 +41,7 @@ class FailingInteractor extends \Deefour\Interactor\Interactor {
 
 class PassingInteractor extends \Deefour\Interactor\Interactor {
 
-  public function perform() {
+  public function call() {
     return $this;
   }
 

@@ -6,7 +6,7 @@
 interface Status {
 
   /**
-   * Whether or not the service object performed it's action successfully
+   * Whether or not the service object called it's action successfully
    *
    * @return boolean
    */

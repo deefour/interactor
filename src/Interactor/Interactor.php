@@ -1,22 +1,13 @@
 <?php namespace Deefour\Interactor;
 
 use Deefour\Interactor\Exception\ContextResolution as ContextResolutionException;
-use Deefour\Interactor\Status\Success;
-use Deefour\Interactor\Status\Error;
-use Deefour\Interactor\Contract\Status as StatusContract;
+use Deefour\Interactor\Exception\Failure;
 use ReflectionMethod;
 
 abstract class Interactor {
 
   /**
-   * Object representing the current state of the interactor (passing/failing)
-   *
-   * @var \Deefour\Interactor\Contract\Status
-   */
-  protected $status;
-
-  /**
-   * Context object containing data required to perform the interactor behavior
+   * Context object containing data required to call the interactor behavior
    *
    * @var \Deefour\Interactor\Context
    */
@@ -28,20 +19,11 @@ abstract class Interactor {
    * Configure the interactor, binding a context object and defaulting the state
    * of the interactor to passing/OK.
    *
-   * @param  \Deefour\Interactor\Context  $context
+   * @param  array|\Deefour\Interactor\Context  $context  [optional]
    * @return void
    */
-  public function __construct(Context $context = null) {
-    $this->context = $context ?: new Context;
-  }
-
-  /**
-   * Getter for the current status/state of the interactor
-   *
-   * @return \Deefour\Interactor\Contract\Status
-   */
-  public function status() {
-    return $this->status ?: new Success($this->context);
+  public function __construct($context = null) {
+    $this->setContext($context);
   }
 
   /**
@@ -55,16 +37,19 @@ abstract class Interactor {
 
   /**
    * Laravel-compatible method for setting the context (a command or event, for
-   * example), and performing the interactor all at once.
+   * example), and calling the interactor all at once.
    *
+   * @param  array|\Deefour\Interactor\Context  $context  [optional]
    * @return \Deefour\Interactor\Interactor
    */
-  public function handle(Context $context) {
+  public function handle($context = null) {
     $this->setContext($context);
 
-    $this->perform();
+    try {
+      $this->call();
+    } catch (Failure $e) { }
 
-    return $this;
+    return $this->context();
   }
 
   /**
@@ -73,51 +58,18 @@ abstract class Interactor {
    * @param  \Deefour\Interactor\Context  $context
    * @return \Deefour\Interactor\Interactor
    */
-  public function setContext(Context $context) {
-    if ( ! $this->isValidContext($context)) {
-      throw new ContextResolutionException(sprintf('A context class of type `%s` is required for this interactor.', $this->contextClass()));
+  public function setContext($context) {
+    $contextClass = $this->contextClass();
+
+    if ( ! is_null($contextClass) and ! is_a($context, $contextClass)) {
+      throw new ContextResolutionException(sprintf('A context class of type `%s` is required for this interactor.', $contextClass));
+    }
+
+    if ( ! is_a($context, Context::class)) {
+      $context = new Context($context);
     }
 
     $this->context = $context;
-
-    return $this;
-  }
-
-  /**
-   * Quick access to check if the state of the interactor is still condisered
-   * 'passing'.
-   *
-   * @return boolean
-   */
-  public function ok() {
-    return $this->status() instanceof Success;
-  }
-
-
-
-  /**
-   * Setter for the status object bound to the interactor
-   *
-   * @param  \Deefour\Interactor\Contract\Status  $status
-   * @return \Deefour\Interactor\Interactor
-   */
-  protected function setStatus(StatusContract $status) {
-    $this->status = $status;
-
-    return $this;
-  }
-
-  /**
-   * Marks the state of the interactor as failed, setting a sensible messaeg
-   * to explain what went wrong.
-   *
-   * @param  string  $message  [optional]
-   * @return \Deefour\Interactor\Interactor
-   */
-  protected function fail($message = null) {
-    $status = new Error($this->context(), $message);
-
-    $this->setStatus($status);
 
     return $this;
   }
@@ -134,42 +86,15 @@ abstract class Interactor {
     $parameters  = $constructor->getParameters();
 
     foreach ($parameters as $parameter) {
+      if (is_null($parameter->getClass())) {
+        continue;
+      }
+
       $className = $parameter->getClass()->name;
 
       if (is_a($className, Context::class, true)) {
         return $className;
       }
-    }
-
-    throw new ContextResolutionException('No context is specified on the `__construct()` method for this class.');
-  }
-
-  /**
-   * Boolean check whether the passed object is an instance of or sublass of
-   * the type-hinted context object specified in the constructor's method signature
-   * for this interactor.
-   *
-   * @param  \Deefour\Interactor\Context  $context
-   * @return boolean
-   */
-  protected function isValidContext($context) {
-    return is_a($context, $this->contextClass());
-  }
-
-
-  /**
-   * Magic method invocation via property access for public methods.
-   *
-   * Example
-   *
-   *   $interactor->ok; //=> true
-   *
-   * @param  string  $arg
-   * @return mixed
-   */
-  public function __get($arg) {
-    if (method_exists($this, $arg) and (new ReflectionMethod($this, $arg))->isPublic()) {
-      return call_user_func([$this, $arg]);
     }
 
     return null;
@@ -183,6 +108,6 @@ abstract class Interactor {
    *
    * @return \Deefour\Interactor\Interactor
    */
-  abstract public function perform();
+  abstract public function call();
 
 }

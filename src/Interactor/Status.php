@@ -2,8 +2,9 @@
 
 use Deefour\Interactor\Context;
 use Deefour\Interactor\Contract\Status as StatusContract;
+use JsonSerializable;
 
-abstract class Status implements StatusContract {
+abstract class Status implements StatusContract, JsonSerializable {
 
   /**
    * The context injected into the interactor that generated this status object
@@ -11,6 +12,8 @@ abstract class Status implements StatusContract {
    * @var \Deefour\Interactor\Context
    */
   protected $context;
+
+
 
   /**
    * Configure the status, injecting the context from the interactor
@@ -22,6 +25,8 @@ abstract class Status implements StatusContract {
     $this->context = $context;
   }
 
+
+
   /**
    * Getter for the bound context
    *
@@ -29,6 +34,13 @@ abstract class Status implements StatusContract {
    */
   public function context() {
     return $this->context;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function jsonSerialize() {
+    return [ 'status' => (string)$this ];
   }
 
 }

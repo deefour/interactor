@@ -13,6 +13,27 @@ class ContextSpec extends ObjectBehavior {
     $this->shouldHaveType('Deefour\Interactor\Context');
   }
 
+  function it_provides_the_status() {
+    $this->status()->shouldReturnAnInstanceOf('Deefour\Interactor\Status');
+  }
+
+  function it_is_ok_by_default() {
+    $this->ok()->shouldReturn(true);
+  }
+
+  function it_is_not_ok_when_failure_occurs() {
+    $this->shouldThrow('\Deefour\Interactor\Exception\Failure')->duringFail();
+    $this->ok()->shouldReturn(false);
+  }
+
+  function it_allows_access_to_public_methods_via_properties() {
+    $this->__get('ok')->shouldReturn(true);
+  }
+
+  function it_returns_null_for_unknown_properties() {
+    $this->__get('asdf')->shouldReturn(null);
+  }
+
 }
 
 class PlainContext extends \Deefour\Interactor\Context { }

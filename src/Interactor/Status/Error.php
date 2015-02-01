@@ -24,7 +24,9 @@ class Error extends Status {
    * @return \Deefour\Interactor\Contract\Status
    */
   public function __construct(Context $context, $error = null) {
-    $this->error   = $error;
+    if ( ! is_null($error)) {
+      $this->error = $error;
+    }
 
     parent::__construct($context);
   }
