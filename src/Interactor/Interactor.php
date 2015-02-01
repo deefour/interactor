@@ -11,7 +11,7 @@ abstract class Interactor {
    *
    * @var \Deefour\Interactor\Context
    */
-  protected $context;
+  protected $context = null;
 
 
 
@@ -33,23 +33,6 @@ abstract class Interactor {
    */
   public function context() {
     return $this->context;
-  }
-
-  /**
-   * Laravel-compatible method for setting the context (a command or event, for
-   * example), and calling the interactor all at once.
-   *
-   * @param  array|\Deefour\Interactor\Context  $context  [optional]
-   * @return \Deefour\Interactor\Interactor
-   */
-  public function handle($context = null) {
-    $this->setContext($context);
-
-    try {
-      $this->call();
-    } catch (Failure $e) { }
-
-    return $this->context();
   }
 
   /**
@@ -108,6 +91,8 @@ abstract class Interactor {
    *
    * @return \Deefour\Interactor\Interactor
    */
-  abstract public function call();
+  public function call() {
+    throw new \Exception('No call method is defined!');
+  }
 
 }
