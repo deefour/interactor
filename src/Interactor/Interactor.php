@@ -19,9 +19,9 @@ abstract class Interactor {
    * Configure the interactor, binding a context object and defaulting the state
    * of the interactor to passing/OK.
    *
-   * @param  array|\Deefour\Interactor\Context  $context  [optional]
+   * @param  \Deefour\Interactor\Context|array  $context  [optional]
    */
-  public function __construct($context = null) {
+  public function __construct($context = []) {
     $this->setContext($context);
   }
 
@@ -43,12 +43,12 @@ abstract class Interactor {
   public function setContext($context) {
     $contextClass = $this->contextClass();
 
-    if ( ! is_null($contextClass) and ! is_a($context, $contextClass)) {
-      throw new ContextResolutionException(sprintf('A context class of type `%s` is required for this interactor.', $contextClass));
+    if (is_array($context)) {
+      $context = new Context($context);
     }
 
-    if ( ! is_a($context, Context::class)) {
-      $context = new Context($context);
+    if ( ! is_null($contextClass) and ! is_a($context, $contextClass)) {
+      throw new ContextResolutionException(sprintf('A context class of type `%s` is required for this interactor.', $contextClass));
     }
 
     $this->context = $context;
