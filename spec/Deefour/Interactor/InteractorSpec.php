@@ -18,13 +18,6 @@ class InteractorSpec extends ObjectBehavior {
     $this->context()->shouldReturn($context);
   }
 
-  function it_sets_context_and_calls_interactor_via_handle() {
-    $context = new InteractorContext;
-
-    $this->handle($context)->shouldReturn($context);
-    $this->context()->ok()->shouldReturn(false);
-  }
-
 }
 
 

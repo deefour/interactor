@@ -20,7 +20,6 @@ abstract class Interactor {
    * of the interactor to passing/OK.
    *
    * @param  array|\Deefour\Interactor\Context  $context  [optional]
-   * @return void
    */
   public function __construct($context = null) {
     $this->setContext($context);
@@ -38,7 +37,7 @@ abstract class Interactor {
   /**
    * Setter for the context object on the interactor
    *
-   * @param  \Deefour\Interactor\Context  $context
+   * @param  \Deefour\Interactor\Context|array  $context
    * @return \Deefour\Interactor\Interactor
    */
   public function setContext($context) {

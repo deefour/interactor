@@ -1,6 +1,7 @@
 <?php namespace Deefour\Interactor;
 
 use Deefour\Interactor\Exception\Failure;
+use InvalidArgumentException;
 
 trait DispatchesInteractors {
 
@@ -15,7 +16,11 @@ trait DispatchesInteractors {
    * @return \Deefour\Interactor\Context
    */
   public function dispatchInteractor($interactor, $context = null) {
-    if ( ! is_a($interactor, Interactor::class)) {
+    if ( ! is_a($interactor, Interactor::class, true)) {
+      throw new InvalidArgumentException('$interactor must be an instance of \Deefour\Interactor\Interactor or the FQCN of an interactor class');
+    }
+
+    if (is_string($interactor)) {
       $interactor = app()->make($interactor, [ 'context' => $context ]);
     } elseif ( ! is_null($context)) {
       $interactor->setContext($context);
@@ -27,5 +32,13 @@ trait DispatchesInteractors {
 
     return $interactor->context();
   }
+
+  /**
+   * Dispatch a command to its appropriate handler.
+   *
+   * @param  mixed  $command
+   * @return mixed
+   */
+  abstract public function dispatch($command);
 
 }
