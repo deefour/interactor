@@ -1,6 +1,6 @@
 {
   "name": "deefour/interactor",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Simple Service Objects",
   "homepage": "https://github.com/deefour/interactor",
   "keywords": ["interactor", "deefour", "service object", "dto", "laravel"],
