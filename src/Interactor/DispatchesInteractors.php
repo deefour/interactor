@@ -17,7 +17,11 @@ trait DispatchesInteractors {
    */
   public function dispatchInteractor($interactor, $context = null) {
     if ( ! is_a($interactor, Interactor::class, true)) {
-      throw new InvalidArgumentException('$interactor must be an instance of \Deefour\Interactor\Interactor or the FQCN of an interactor class');
+      $class = is_string($interactor) ? $interactor : get_class($interactor);
+
+      throw new InvalidArgumentException(
+        sprintf('$interactor must be an instance of \Deefour\Interactor\Interactor' .
+                ' or the FQCN of an interactor class; [%s] was provided', $class));
     }
 
     if (is_string($interactor)) {
