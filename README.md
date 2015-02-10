@@ -102,7 +102,7 @@ class CarContext extends Context {
 
 The property assignments in the constructor could alternatively be delegated back to the `Deefour\Interactor\Context` superclass via [`get_defined_vars()`](http://php.net/manual/en/function.get-defined-vars.php). This is useful for contexts with many arguments in the constructor signature.
 
-```php
+```
 public function __construct($make, $model) {
   parent::__construct(get_defined_vars());
 }
