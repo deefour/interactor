@@ -147,7 +147,7 @@ echo get_class($c->status()); //=> 'Deefour\Interactor\Status\Error'
 Within a controller, implementing the car creation through the `CreateCar` interactor might look like this.
 
 ```php
-public function create(Request $request) {
+public function create(CreateRequest $request) {
   $context = new CarContext($request->get('make'), $request->get('model'));
 
   (new CreateCar($context))->call();
@@ -162,11 +162,13 @@ public function create(Request $request) {
 
 ### Integration With Laravel 5
 
-Within Laravel 5 a command can be treated as in interactor. The context should still be passed through to the constructor of the interactor. The `handle()` method has type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container) that can be leveraged. An implementation of the `CreateCar` interactor as a command in Laravel 5 might look as follows:
+Within Laravel 5 a command can be treated as in interactor. The constructor and `handle()` methods both have type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a command in Laravel 5 might look as follows:
 
 ```php
 namespace App\Commands;
 
+use App\Car;
+use App\Contexts\CreateCarContext as CarContext;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Deefour\Interactor\Interactor;
 use Illuminate\Contracts\Redis\Database as Redis;
@@ -178,7 +180,7 @@ class CreateCar extends Interactor implements SelfHandling {
    *
    * @return void
    */
-  public function __construct(CreateCar $context) {
+  public function __construct(CarContext $context) {
     parent::__construct($context);
   }
 
@@ -198,7 +200,7 @@ class CreateCar extends Interactor implements SelfHandling {
 }
 ```
 
-Include the `Deefour\Interactor\DispatchesInteractors` trait in your controller to use the `dispatchInteractor()` method. This will pass the interactor through to Laravel's Command Bus as it would any other Command.
+Include the `Deefour\Interactor\DispatchesInteractors` trait in your controller to use the `dispatchInteractor()` method.
 
 ```php
 namespace App\Http\Controllers;
@@ -206,6 +208,7 @@ namespace App\Http\Controllers;
 use App\Commands\CreateCar;
 use App\Context\Car as CarContext;
 use Deefour\Interactor\DispatchesInteractors;
+use Illuminate\Http\Request;
 
 class CarController extends BaseController {
 
