@@ -1,6 +1,6 @@
 {
   "name": "deefour/interactor",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Simple Service Objects",
   "homepage": "https://github.com/deefour/interactor",
   "keywords": ["interactor", "deefour", "service object", "dto", "laravel"],
@@ -9,7 +9,7 @@
     "php": ">=5.5.0"
   },
   "require-dev": {
-    "phpspec/phpspec": "2.1.1"
+    "phpspec/phpspec": "2.1.*@dev"
   },
   "license": "MIT",
   "authors": [
