@@ -1,5 +1,6 @@
 <?php namespace Deefour\Interactor;
 
+use ArrayAccess;
 use Deefour\Interactor\Exception\Failure;
 use Deefour\Interactor\Status\Success;
 use Deefour\Interactor\Status\Error;
@@ -23,7 +24,7 @@ use ReflectionMethod;
  * }
  * </code>
  */
-class Context {
+class Context implements ArrayAccess {
 
   /**
    * Object representing the current state of the interactor (passing/failing)
@@ -32,20 +33,25 @@ class Context {
    */
   protected $status;
 
+  /**
+   * The attributes set on the context.
+   *
+   * @var array
+   */
+  protected $attributes = [];
+
 
 
   /**
    * If this constructor is overridden by the extending context object with a
    * (usually) type-hinted, specific set of arguments - as a way of defining
    * requirements for the interactor - those arguments will be available as
-   * public properties.
+   * public attributes.
    *
-   * @param  array  $properties  [optional]
+   * @param  array  $attributes  [optional]
    */
-  public function __construct(array $properties = []) {
-    foreach ($properties as $property => $value) {
-      $this->$property = $value;
-    }
+  public function __construct(array $attributes = []) {
+    $this->attributes = $attributes;
   }
 
 
@@ -97,23 +103,74 @@ class Context {
   }
 
 
+  /**
+   * {@inheritdoc}
+   */
+  public function offsetExists($offset) {
+    return array_key_exists($offset, $this->attributes);
+  }
 
   /**
-   * Magic method invocation via property access for public methods.
-   *
-   * Example
-   *
-   *   $interactor->ok; //=> true
-   *
-   * @param  string  $arg
-   * @return mixed
+   * {@inheritdoc}
    */
-  public function __get($arg) {
-    if (method_exists($this, $arg) and (new ReflectionMethod($this, $arg))->isPublic()) {
-      return call_user_func([$this, $arg]);
+  public function offsetGet($offset) {
+    if ( ! $this->offsetExists($offset)) {
+      return null;
     }
 
-    return null;
+    return $this->attributes[$offset];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function offsetSet($offset, $value) {
+    $this->attributes[$offset] = $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function offsetUnset($offset) {
+    unset($this->attributes[$offset]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function get($attribute) {
+    if ( ! isset($this->attributes[$attribute])) {
+      return null;
+    }
+  }
+
+  /**
+   * Return the array of attributes set on the context.
+   */
+  public function toArray() {
+    return $this->attributes;
+  }
+
+
+
+  /**
+   * Magic access for attributes set on the context object.
+   *
+   * @param  string  $property
+   * @return mixed
+   */
+  public function __get($attribute) {
+    return $this->offsetGet($attribute);
+  }
+
+  /**
+   * Magic setter, pushing values into the attributes array by property name.
+   *
+   * @param  string  $attribute
+   * @param  mixed  $value
+   */
+  public function __set($attribute, $value) {
+    $this->offsetSet($attribute, $value);
   }
 
 }
