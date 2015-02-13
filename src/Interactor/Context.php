@@ -29,7 +29,7 @@ class Context implements ArrayAccess {
   /**
    * Object representing the current state of the interactor (passing/failing)
    *
-   * @var \Deefour\Interactor\Contract\Status
+   * @var Contract\Status
    */
   protected $status;
 
@@ -59,7 +59,7 @@ class Context implements ArrayAccess {
   /**
    * Getter for the current status/state of the interactor
    *
-   * @return \Deefour\Interactor\Contract\Status
+   * @return Contract\Status
    */
   public function status() {
     return $this->status ?: new Success($this);
@@ -78,8 +78,8 @@ class Context implements ArrayAccess {
   /**
    * Setter for the status object bound to the interactor
    *
-   * @param  \Deefour\Interactor\Contract\Status  $status
-   * @return \Deefour\Interactor\Interactor
+   * @param  Contract\Status  $status
+   * @return Context
    */
   protected function setStatus(StatusContract $status) {
     $this->status = $status;
@@ -92,7 +92,7 @@ class Context implements ArrayAccess {
    * to explain what went wrong.
    *
    * @param  string  $message  [optional]
-   * @return \Deefour\Interactor\Interactor
+   * @return Interactor
    */
   public function fail($message = null) {
     $status = new Error($this, $message);
@@ -156,7 +156,7 @@ class Context implements ArrayAccess {
   /**
    * Magic access for attributes set on the context object.
    *
-   * @param  string  $property
+   * @param  string  $attribute
    * @return mixed
    */
   public function __get($attribute) {

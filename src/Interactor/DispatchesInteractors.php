@@ -11,9 +11,9 @@ trait DispatchesInteractors {
    *
    * All failures are currently suppressed.
    *
-   * @param  \Deefour\Interactor\Interactor|string  $interactor
-   * @param  \Deefour\Interactor\Context|array  $context  [optional]
-   * @return \Deefour\Interactor\Context
+   * @param  Interactor|string  $interactor
+   * @param  Context|array  $context  [optional]
+   * @return Context
    */
   public function dispatchInteractor($interactor, $context = null) {
     if ( ! is_a($interactor, Interactor::class, true)) {

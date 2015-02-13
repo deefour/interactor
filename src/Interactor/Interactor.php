@@ -9,7 +9,7 @@ abstract class Interactor {
   /**
    * Context object containing data required to call the interactor behavior
    *
-   * @var \Deefour\Interactor\Context
+   * @var Context
    */
   protected $context = null;
 
@@ -19,7 +19,7 @@ abstract class Interactor {
    * Configure the interactor, binding a context object and defaulting the state
    * of the interactor to passing/OK.
    *
-   * @param  \Deefour\Interactor\Context|array  $context  [optional]
+   * @param  Context|array  $context  [optional]
    */
   public function __construct($context = []) {
     $this->setContext($context);
@@ -28,7 +28,7 @@ abstract class Interactor {
   /**
    * Geter for the context object bound to the interactor
    *
-   * @return \Deefour\Interactor\Context
+   * @return Context
    */
   public function context() {
     return $this->context;
@@ -37,8 +37,8 @@ abstract class Interactor {
   /**
    * Setter for the context object on the interactor
    *
-   * @param  \Deefour\Interactor\Context|array  $context
-   * @return \Deefour\Interactor\Interactor
+   * @param  Context|array  $context
+   * @return Interactor
    */
   public function setContext($context) {
     $contextClass = $this->contextClass();
@@ -60,7 +60,7 @@ abstract class Interactor {
    * Determine the FQCN of the context class type-hinted on the constructor's
    * method signature.
    *
-   * @throws \Deefour\Interactor\Exception\ContextResolution;
+   * @throws Exception\ContextResolution;
    * @return string
    */
   protected function contextClass() {
@@ -88,7 +88,7 @@ abstract class Interactor {
    * Process the business logic this interactor exists to handle, using the bound
    * context for support.
    *
-   * @return \Deefour\Interactor\Interactor
+   * @return Interactor
    */
   public function call() {
     throw new \Exception('No call method is defined!');
