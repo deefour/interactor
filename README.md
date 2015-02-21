@@ -11,7 +11,7 @@ Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://
 Add Interactor to your `composer.json` file and run `composer update`. See [Packagist](https://packagist.org/packages/deefour/Interactor) for specific versions.
 
 ```
-"deefour/interactor": "~0.3@dev"
+"deefour/interactor": "~0.4"
 ```
 
 **`>=PHP5.5.0` is required.**
@@ -235,6 +235,10 @@ class CarController extends BaseController {
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+#### 0.4.4 - February 20, 2015
+
+ - Added `permit()` method to provide a watered down version of [rails/strong_parameters](https://github.com/rails/strong_parameters) whitelisting against the contents of a `Context`.
 
 #### 0.4.0 - February 1, 2015
 
