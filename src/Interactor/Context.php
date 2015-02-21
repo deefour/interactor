@@ -151,12 +151,71 @@ class Context implements ArrayAccess {
     return $this->attributes;
   }
 
+  /**
+   * Retrieve a specific subset of the attributes on the context based on the
+   * provided whitelist.
+   *
+   * @param  array  $whitelist
+   * @return array
+   */
+  public function permit(array $whitelist, $attributes = null) {
+    $attributes     = $attributes ?: $this->attributes;
+    $response = [];
+
+    foreach ($whitelist as $key => $value) {
+      if (is_string($value)) { // scalar value
+        $this->addPermittedValue($response, $attributes, $value);
+      } elseif ( ! is_array($value)) { // invalid structure; move on
+        continue;
+      } elseif (empty($value)) { // arbitrary array/collection
+        $this->addPermittedCollection($response, $attributes, $key);
+      } else { // recursion
+        $response[$key] = $this->permit($whitelist[$key], $attributes[$key]);
+      }
+    }
+
+    return $response;
+  }
+
+
+  /**
+   * Adds a specific attribute to the resposne object.
+   *
+   * @param  array  $response
+   * @param  array  $source
+   * @param  string  $attribute
+   * @return void
+   */
+  private function addPermittedValue(array &$response, array $source, $attribute) {
+    if ( ! isset($source[$attribute])) {
+      return;
+    }
+
+    $response[$attribute] = $source[$attribute];
+  }
+
+  /**
+   * Adds an arbitrary collection to the response object, by key.
+   *
+   * @param  array  $response
+   * @param  array  $source
+   * @param  string  $attribute
+   * @return void
+   */
+  private function addPermittedCollection(array &$response, array $source, $attribute) {
+    if ( ! isset($source[$attribute]) or ! is_array($source[$attribute])) {
+      return;
+    }
+
+    $response[$attribute] = $source[$attribute];
+  }
+
 
 
   /**
    * Magic access for attributes set on the context object.
    *
-   * @param  string  $attribute
+   * @param  string  $property
    * @return mixed
    */
   public function __get($attribute) {
