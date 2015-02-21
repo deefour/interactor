@@ -215,7 +215,7 @@ class Context implements ArrayAccess {
   /**
    * Magic access for attributes set on the context object.
    *
-   * @param  string  $property
+   * @param  string  $attribute
    * @return mixed
    */
   public function __get($attribute) {
