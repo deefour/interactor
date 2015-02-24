@@ -232,4 +232,13 @@ class Context implements ArrayAccess {
     $this->offsetSet($attribute, $value);
   }
 
+  /**
+   * Magic isset.
+   *
+   * @return boolean
+   */
+  public function __isset($property) {
+    return $this->offsetExists($property);
+  }
+
 }
