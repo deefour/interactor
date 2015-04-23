@@ -9,7 +9,7 @@
     "php": ">=5.5.0"
   },
   "require-dev": {
-    "phpspec/phpspec": "2.1.*@dev"
+    "phpspec/phpspec": "^2.2.0"
   },
   "license": "MIT",
   "authors": [
@@ -21,7 +21,7 @@
   "minimum-stability": "dev",
   "autoload": {
     "psr-4": {
-        "Deefour\\": "src"
-      }
+      "Deefour\\": "src"
+    }
   }
 }
