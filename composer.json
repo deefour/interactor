@@ -11,6 +11,9 @@
   "require-dev": {
     "phpspec/phpspec": "^2.2.0"
   },
+  "suggest": {
+    "deefour/transformer": "A more flexible, consistent alternative to passing raw input into an context."
+  },
   "license": "MIT",
   "authors": [
     {

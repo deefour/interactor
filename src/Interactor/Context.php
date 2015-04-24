@@ -6,6 +6,7 @@ use Deefour\Interactor\Status\Success;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Contract\Status as StatusContract;
 use ReflectionMethod;
+use Deefour\Transformer\Transformer;
 
 /**
  * Context object. Extends the Fluent class from illuminate/support,
@@ -36,7 +37,7 @@ class Context implements ArrayAccess {
   /**
    * The attributes set on the context.
    *
-   * @var array
+   * @var array|Transformer
    */
   protected $attributes = [];
 
@@ -48,10 +49,14 @@ class Context implements ArrayAccess {
    * requirements for the interactor - those arguments will be available as
    * public attributes.
    *
-   * @param  array  $attributes  [optional]
+   * @param  array|Transformer  $attributes  [optional]
    */
-  public function __construct(array $attributes = []) {
+  public function __construct($attributes = []) {
     $this->attributes = $attributes;
+
+    if (is_array($this->attributes) and class_exists(Transformer::class)) {
+      $this->attributes = new Transformer($this->attributes);
+    }
   }
 
 
@@ -142,12 +147,18 @@ class Context implements ArrayAccess {
     if ( ! isset($this->attributes[$attribute])) {
       return null;
     }
+
+    return $this->attributes[$attribute];
   }
 
   /**
    * Return the array of attributes set on the context.
    */
   public function toArray() {
+    if (method_exists($this->attributes, 'toArray')) {
+      return $this->attributes->toArray();
+    }
+
     return $this->attributes;
   }
 
