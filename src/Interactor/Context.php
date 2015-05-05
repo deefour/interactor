@@ -37,7 +37,7 @@ class Context implements ArrayAccess {
   /**
    * The attributes set on the context.
    *
-   * @var array|Transformer
+   * @var array|MutableTransformer
    */
   protected $attributes = [];
 
@@ -49,12 +49,12 @@ class Context implements ArrayAccess {
    * requirements for the interactor - those arguments will be available as
    * public attributes.
    *
-   * @param  array|Transformer  $attributes  [optional]
+   * @param  array|MutableTransformer  $attributes  [optional]
    */
   public function __construct($attributes = []) {
     $this->attributes = $attributes;
 
-    if (is_array($this->attributes) and class_exists(Transformer::class)) {
+    if (is_array($this->attributes) and class_exists(MutableTransformer::class)) {
       $this->attributes = new MutableTransformer($this->attributes);
     }
   }
