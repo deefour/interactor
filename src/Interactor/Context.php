@@ -6,7 +6,7 @@ use Deefour\Interactor\Status\Success;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Contract\Status as StatusContract;
 use ReflectionMethod;
-use Deefour\Transformer\Transformer;
+use Deefour\Transformer\MutableTransformer;
 
 /**
  * Context object. Extends the Fluent class from illuminate/support,
@@ -55,7 +55,7 @@ class Context implements ArrayAccess {
     $this->attributes = $attributes;
 
     if (is_array($this->attributes) and class_exists(Transformer::class)) {
-      $this->attributes = new Transformer($this->attributes);
+      $this->attributes = new MutableTransformer($this->attributes);
     }
   }
 
