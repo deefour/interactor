@@ -170,8 +170,8 @@ class Context implements ArrayAccess {
    * @return array
    */
   public function permit(array $whitelist, $attributes = null) {
-    $attributes     = $attributes ?: $this->attributes;
-    $response = [];
+    $attributes = $attributes ?: $this->attributes;
+    $response   = [];
 
     foreach ($whitelist as $key => $value) {
       if (is_string($value)) { // scalar value
