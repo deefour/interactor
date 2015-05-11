@@ -112,7 +112,7 @@ class Context implements ArrayAccess {
    * {@inheritdoc}
    */
   public function offsetExists($offset) {
-    return array_key_exists($offset, $this->attributes);
+    return isset($this->attributes[$offset]);
   }
 
   /**
