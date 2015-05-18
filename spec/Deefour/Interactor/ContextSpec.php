@@ -1,5 +1,6 @@
 <?php namespace spec\Deefour\Interactor;
 
+use Deefour\Transformer\MutableTransformer;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -32,6 +33,10 @@ class ContextSpec extends ObjectBehavior {
 
   function it_returns_null_for_unknown_properties() {
     $this->__get('asdf')->shouldReturn(null);
+  }
+
+  function it_returns_raw_attributes_object_via_accessor() {
+    $this->attributes()->shouldReturnAnInstanceOf('Deefour\Transformer\MutableTransformer');
   }
 
 }

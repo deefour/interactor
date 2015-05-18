@@ -71,6 +71,15 @@ class Context implements ArrayAccess {
   }
 
   /**
+   * Accessor for the attributes object.
+   *
+   * @return MutableTransformer|array
+   */
+  public function attributes() {
+    return $this->attributes;
+  }
+
+  /**
    * Quick access to check if the state of the interactor is still condisered
    * 'passing'.
    *
