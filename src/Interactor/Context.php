@@ -1,11 +1,10 @@
 <?php namespace Deefour\Interactor;
 
 use ArrayAccess;
-use Deefour\Interactor\Exception\Failure;
-use Deefour\Interactor\Status\Success;
-use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Contract\Status as StatusContract;
-use ReflectionMethod;
+use Deefour\Interactor\Exception\Failure;
+use Deefour\Interactor\Status\Error;
+use Deefour\Interactor\Status\Success;
 use Deefour\Transformer\MutableTransformer;
 
 /**
@@ -39,9 +38,7 @@ class Context implements ArrayAccess {
    *
    * @var array|MutableTransformer
    */
-  protected $attributes = [];
-
-
+  protected $attributes = [ ];
 
   /**
    * If this constructor is overridden by the extending context object with a
@@ -49,17 +46,15 @@ class Context implements ArrayAccess {
    * requirements for the interactor - those arguments will be available as
    * public attributes.
    *
-   * @param  array|MutableTransformer  $attributes  [optional]
+   * @param  array|MutableTransformer $attributes [optional]
    */
-  public function __construct($attributes = []) {
+  public function __construct($attributes = [ ]) {
     $this->attributes = $attributes;
 
     if (is_array($this->attributes) and class_exists(MutableTransformer::class)) {
       $this->attributes = new MutableTransformer($this->attributes);
     }
   }
-
-
 
   /**
    * Getter for the current status/state of the interactor
@@ -92,7 +87,8 @@ class Context implements ArrayAccess {
   /**
    * Setter for the status object bound to the interactor
    *
-   * @param  Contract\Status  $status
+   * @param  Contract\Status $status
+   *
    * @return Context
    */
   protected function setStatus(StatusContract $status) {
@@ -105,7 +101,8 @@ class Context implements ArrayAccess {
    * Marks the state of the interactor as failed, setting a sensible messaeg
    * to explain what went wrong.
    *
-   * @param  string  $message  [optional]
+   * @param  string $message [optional]
+   *
    * @return Interactor
    */
   public function fail($message = null) {
@@ -115,7 +112,6 @@ class Context implements ArrayAccess {
 
     throw new Failure($this, $message);
   }
-
 
   /**
    * {@inheritdoc}
@@ -132,32 +128,32 @@ class Context implements ArrayAccess {
       return null;
     }
 
-    return $this->attributes[$offset];
+    return $this->attributes[ $offset ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function offsetSet($offset, $value) {
-    $this->attributes[$offset] = $value;
+    $this->attributes[ $offset ] = $value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function offsetUnset($offset) {
-    unset($this->attributes[$offset]);
+    unset($this->attributes[ $offset ]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function get($attribute) {
-    if ( ! isset($this->attributes[$attribute])) {
+    if ( ! isset($this->attributes[ $attribute ])) {
       return null;
     }
 
-    return $this->attributes[$attribute];
+    return $this->attributes[ $attribute ];
   }
 
   /**
@@ -175,12 +171,13 @@ class Context implements ArrayAccess {
    * Retrieve a specific subset of the attributes on the context based on the
    * provided whitelist.
    *
-   * @param  array  $whitelist
+   * @param  array $whitelist
+   *
    * @return array
    */
   public function permit(array $whitelist, $attributes = null) {
     $attributes = $attributes ?: $this->attributes;
-    $response   = [];
+    $response   = [ ];
 
     foreach ($whitelist as $key => $value) {
       if (is_string($value)) { // scalar value
@@ -190,28 +187,28 @@ class Context implements ArrayAccess {
       } elseif (empty($value)) { // arbitrary array/collection
         $this->addPermittedCollection($response, $attributes, $key);
       } else { // recursion
-        $response[$key] = $this->permit($whitelist[$key], $attributes[$key]);
+        $response[ $key ] = $this->permit($whitelist[ $key ], $attributes[ $key ]);
       }
     }
 
     return $response;
   }
 
-
   /**
    * Adds a specific attribute to the resposne object.
    *
    * @param  array  $response
    * @param  array  $source
-   * @param  string  $attribute
+   * @param  string $attribute
+   *
    * @return void
    */
   private function addPermittedValue(array &$response, array $source, $attribute) {
-    if ( ! isset($source[$attribute])) {
+    if ( ! isset($source[ $attribute ])) {
       return;
     }
 
-    $response[$attribute] = $source[$attribute];
+    $response[ $attribute ] = $source[ $attribute ];
   }
 
   /**
@@ -219,23 +216,23 @@ class Context implements ArrayAccess {
    *
    * @param  array  $response
    * @param  array  $source
-   * @param  string  $attribute
+   * @param  string $attribute
+   *
    * @return void
    */
   private function addPermittedCollection(array &$response, array $source, $attribute) {
-    if ( ! isset($source[$attribute]) or ! is_array($source[$attribute])) {
+    if ( ! isset($source[ $attribute ]) or ! is_array($source[ $attribute ])) {
       return;
     }
 
-    $response[$attribute] = $source[$attribute];
+    $response[ $attribute ] = $source[ $attribute ];
   }
-
-
 
   /**
    * Magic access for attributes set on the context object.
    *
-   * @param  string  $attribute
+   * @param  string $attribute
+   *
    * @return mixed
    */
   public function __get($attribute) {
@@ -245,7 +242,7 @@ class Context implements ArrayAccess {
   /**
    * Magic setter, pushing values into the attributes array by property name.
    *
-   * @param  string  $attribute
+   * @param  string $attribute
    * @param  mixed  $value
    */
   public function __set($attribute, $value) {

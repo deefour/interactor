@@ -41,7 +41,8 @@ class ContextSpec extends ObjectBehavior {
 
 }
 
-class PlainContext extends \Deefour\Interactor\Context { }
+class PlainContext extends \Deefour\Interactor\Context {
+}
 
 class FancyContext extends \Deefour\Interactor\Context {
 

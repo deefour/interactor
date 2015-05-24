@@ -11,8 +11,9 @@ trait DispatchesInteractors {
    *
    * All failures are currently suppressed.
    *
-   * @param  Interactor|string  $interactor
-   * @param  Context|array  $context  [optional]
+   * @param  Interactor|string $interactor
+   * @param  Context|array     $context [optional]
+   *
    * @return Context
    */
   public function dispatchInteractor($interactor, $context = null) {
@@ -21,7 +22,7 @@ trait DispatchesInteractors {
 
       throw new InvalidArgumentException(
         sprintf('$interactor must be an instance of \Deefour\Interactor\Interactor' .
-                ' or the FQCN of an interactor class; [%s] was provided', $class));
+          ' or the FQCN of an interactor class; [%s] was provided', $class));
     }
 
     if (is_string($interactor)) {
@@ -42,7 +43,8 @@ trait DispatchesInteractors {
   /**
    * Dispatch a command to its appropriate handler.
    *
-   * @param  mixed  $command
+   * @param  mixed $command
+   *
    * @return mixed
    */
   abstract public function dispatch($command);

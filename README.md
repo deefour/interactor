@@ -238,6 +238,12 @@ class CarController extends BaseController {
 
 ## Changelog
 
+#### 0.5.0 - May 25, 2015
+
+ - Now suggesting `deefour/transformer` be required. If available, the context will be wrapped in a `MutableTransformer`, providing all the functionality available in [`deefour/transformer`](https://github.com/deefour/transformer) transparently on the context object.
+ - New `__isset()` implementation and better support for null context values.
+ - Improved code formatting.
+
 #### 0.4.4 - February 20, 2015
 
  - Added `permit()` method to provide a watered down version of [rails/strong_parameters](https://github.com/rails/strong_parameters) whitelisting against the contents of a `Context`.

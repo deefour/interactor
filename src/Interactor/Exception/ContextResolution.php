@@ -2,4 +2,5 @@
 
 use Exception;
 
-class ContextResolution extends Exception { }
+class ContextResolution extends Exception {
+}

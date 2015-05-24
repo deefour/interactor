@@ -1,5 +1,7 @@
 <?php namespace Deefour\Interactor\Contract;
 
+use Deefour\Interactor\Context;
+
 /**
  * Contract which all status objects must adhere to.
  */
@@ -16,7 +18,7 @@ interface Status {
    * Retrieve the context object from the service object that has been
    * injected into this class
    *
-   * @return \Deefour\Interactor\Context
+   * @return Context
    */
   public function context();
 

@@ -1,7 +1,7 @@
 <?php namespace Deefour\Interactor\Status;
 
-use Deefour\Interactor\Status;
 use Deefour\Interactor\Context;
+use Deefour\Interactor\Status;
 
 /**
  * Error status object. This is instantiated when an interactor is marked as
@@ -19,8 +19,8 @@ class Error extends Status {
   /**
    * {@inheritdoc} Optionally overrides the default error message.
    *
-   * @param  \Deefour\Interactor\Context  $context
-   * @param  string  $error  [optional]
+   * @param  Context $context
+   * @param  string  $error [optional]
    */
   public function __construct(Context $context, $error = null) {
     if ( ! is_null($error)) {

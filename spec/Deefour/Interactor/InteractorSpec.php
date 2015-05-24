@@ -20,8 +20,6 @@ class InteractorSpec extends ObjectBehavior {
 
 }
 
-
-
 class FailingInteractor extends \Deefour\Interactor\Interactor {
 
   public function call() {
@@ -48,4 +46,5 @@ class PassingContext extends \Deefour\Interactor\Context {
 
 }
 
-class InteractorContext extends \Deefour\Interactor\Context { }
+class InteractorContext extends \Deefour\Interactor\Context {
+}

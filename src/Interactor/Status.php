@@ -12,18 +12,14 @@ abstract class Status implements StatusContract, JsonSerializable {
    */
   protected $context;
 
-
-
   /**
    * Configure the status, injecting the context from the interactor
    *
-   * @param  Context  $context
+   * @param  Context $context
    */
   public function __construct(Context $context) {
     $this->context = $context;
   }
-
-
 
   /**
    * Getter for the bound context

@@ -3,7 +3,8 @@
 use Deefour\Interactor\Status;
 
 /**
- * The passing/successful status object. The default status object for an interactor.
+ * The passing/successful status object. The default status object for an
+ * interactor.
  */
 class Success extends Status {
 

@@ -13,8 +13,8 @@ class Failure extends Exception {
   /**
    * Constructor
    *
-   * @param  \Deefour\Interactor\Context  $context
-   * @param  string  $message  [optional]
+   * @param  Context $context
+   * @param  string  $message [optional]
    */
   public function __construct(Context $context, $message = '') {
     $this->context = $context;
