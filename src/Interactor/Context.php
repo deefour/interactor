@@ -172,6 +172,7 @@ class Context implements ArrayAccess {
    * provided whitelist.
    *
    * @param  array $whitelist
+   * @param null   $attributes
    *
    * @return array
    */
@@ -195,15 +196,15 @@ class Context implements ArrayAccess {
   }
 
   /**
-   * Adds a specific attribute to the resposne object.
+   * Adds a specific attribute to the response object.
    *
    * @param  array  $response
-   * @param  array  $source
+   * @param  mixed  $source
    * @param  string $attribute
    *
    * @return void
    */
-  private function addPermittedValue(array &$response, array $source, $attribute) {
+  private function addPermittedValue(array &$response, $source, $attribute) {
     if ( ! isset($source[ $attribute ])) {
       return;
     }
@@ -215,12 +216,12 @@ class Context implements ArrayAccess {
    * Adds an arbitrary collection to the response object, by key.
    *
    * @param  array  $response
-   * @param  array  $source
+   * @param  mixed  $source
    * @param  string $attribute
    *
    * @return void
    */
-  private function addPermittedCollection(array &$response, array $source, $attribute) {
+  private function addPermittedCollection(array &$response, $source, $attribute) {
     if ( ! isset($source[ $attribute ]) or ! is_array($source[ $attribute ])) {
       return;
     }
