@@ -1,5 +1,5 @@
 suites:
   interactor_suite:
     namespace: Deefour\Interactor
-    psr4_prefix: Deefour
+    psr4_prefix: Deefour\Interactor
     src_path: src

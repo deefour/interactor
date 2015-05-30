@@ -22,7 +22,7 @@
   "minimum-stability": "dev",
   "autoload": {
     "psr-4": {
-      "Deefour\\": "src"
+      "Deefour\\Interactor\\": "src"
     }
   },
   "autoload-dev": {
