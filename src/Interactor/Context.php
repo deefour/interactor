@@ -1,11 +1,10 @@
 <?php namespace Deefour\Interactor;
 
-use ArrayAccess;
-use Deefour\Interactor\Contract\Status as StatusContract;
 use Deefour\Interactor\Exception\Failure;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Status\Success;
 use Deefour\Transformer\MutableTransformer;
+use ReflectionMethod;
 
 /**
  * Context object. Extends the Fluent class from illuminate/support,
@@ -24,7 +23,7 @@ use Deefour\Transformer\MutableTransformer;
  * }
  * </code>
  */
-class Context implements ArrayAccess {
+class Context extends MutableTransformer {
 
   /**
    * Object representing the current state of the interactor (passing/failing)
@@ -34,44 +33,12 @@ class Context implements ArrayAccess {
   protected $status;
 
   /**
-   * The attributes set on the context.
-   *
-   * @var array|MutableTransformer
-   */
-  protected $attributes = [ ];
-
-  /**
-   * If this constructor is overridden by the extending context object with a
-   * (usually) type-hinted, specific set of arguments - as a way of defining
-   * requirements for the interactor - those arguments will be available as
-   * public attributes.
-   *
-   * @param  array|MutableTransformer $attributes [optional]
-   */
-  public function __construct($attributes = [ ]) {
-    $this->attributes = $attributes;
-
-    if (is_array($this->attributes) and class_exists(MutableTransformer::class)) {
-      $this->attributes = new MutableTransformer($this->attributes);
-    }
-  }
-
-  /**
    * Getter for the current status/state of the interactor
    *
    * @return Contract\Status
    */
   public function status() {
     return $this->status ?: new Success($this);
-  }
-
-  /**
-   * Accessor for the attributes object.
-   *
-   * @return MutableTransformer|array
-   */
-  public function attributes() {
-    return $this->attributes;
   }
 
   /**
@@ -85,178 +52,33 @@ class Context implements ArrayAccess {
   }
 
   /**
-   * Setter for the status object bound to the interactor
-   *
-   * @param  Contract\Status $status
-   *
-   * @return Context
-   */
-  protected function setStatus(StatusContract $status) {
-    $this->status = $status;
-
-    return $this;
-  }
-
-  /**
    * Marks the state of the interactor as failed, setting a sensible messaeg
    * to explain what went wrong.
    *
    * @param  string $message [optional]
    *
    * @return Interactor
+   * @throws Failure
    */
   public function fail($message = null) {
-    $status = new Error($this, $message);
-
-    $this->setStatus($status);
+    $this->status = new Error($this, $message);
 
     throw new Failure($this, $message);
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function offsetExists($offset) {
-    return array_key_exists($offset, $this->toArray());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function offsetGet($offset) {
-    if ( ! $this->offsetExists($offset)) {
-      return null;
-    }
-
-    return $this->attributes[ $offset ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function offsetSet($offset, $value) {
-    $this->attributes[ $offset ] = $value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function offsetUnset($offset) {
-    unset($this->attributes[ $offset ]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function get($attribute) {
-    if ( ! isset($this->attributes[ $attribute ])) {
-      return null;
-    }
-
-    return $this->attributes[ $attribute ];
-  }
-
-  /**
-   * Return the array of attributes set on the context.
-   */
-  public function toArray() {
-    if (method_exists($this->attributes, 'toArray')) {
-      return $this->attributes->toArray();
-    }
-
-    return $this->attributes;
-  }
-
-  /**
-   * Retrieve a specific subset of the attributes on the context based on the
-   * provided whitelist.
-   *
-   * @param  array $whitelist
-   * @param null   $attributes
-   *
-   * @return array
-   */
-  public function permit(array $whitelist, $attributes = null) {
-    $attributes = $attributes ?: $this->attributes;
-    $response   = [ ];
-
-    foreach ($whitelist as $key => $value) {
-      if (is_string($value)) { // scalar value
-        $this->addPermittedValue($response, $attributes, $value);
-      } elseif ( ! is_array($value)) { // invalid structure; move on
-        continue;
-      } elseif (empty($value)) { // arbitrary array/collection
-        $this->addPermittedCollection($response, $attributes, $key);
-      } else { // recursion
-        $response[ $key ] = $this->permit($whitelist[ $key ], $attributes[ $key ]);
-      }
-    }
-
-    return $response;
-  }
-
-  /**
-   * Adds a specific attribute to the response object.
-   *
-   * @param  array  $response
-   * @param  mixed  $source
-   * @param  string $attribute
-   *
-   * @return void
-   */
-  private function addPermittedValue(array &$response, $source, $attribute) {
-    if ( ! isset($source[ $attribute ])) {
-      return;
-    }
-
-    $response[ $attribute ] = $source[ $attribute ];
-  }
-
-  /**
-   * Adds an arbitrary collection to the response object, by key.
-   *
-   * @param  array  $response
-   * @param  mixed  $source
-   * @param  string $attribute
-   *
-   * @return void
-   */
-  private function addPermittedCollection(array &$response, $source, $attribute) {
-    if ( ! isset($source[ $attribute ]) or ! is_array($source[ $attribute ])) {
-      return;
-    }
-
-    $response[ $attribute ] = $source[ $attribute ];
-  }
-
-  /**
-   * Magic access for attributes set on the context object.
+   * Magic property access for public methods on the context.
    *
    * @param  string $attribute
    *
    * @return mixed
    */
   public function __get($attribute) {
-    return $this->offsetGet($attribute);
-  }
+    if (method_exists($this, $attribute) && (new ReflectionMethod($this, $attribute))->isPublic()) {
+      return $this->$attribute();
+    }
 
-  /**
-   * Magic setter, pushing values into the attributes array by property name.
-   *
-   * @param  string $attribute
-   * @param  mixed  $value
-   */
-  public function __set($attribute, $value) {
-    $this->offsetSet($attribute, $value);
-  }
-
-  /**
-   * Magic isset.
-   *
-   * @return boolean
-   */
-  public function __isset($property) {
-    return $this->offsetExists($property);
+    return $this->get($attribute);
   }
 
 }

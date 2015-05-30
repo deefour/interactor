@@ -53,13 +53,20 @@ class CreateCar extends Interactor {
 
 ## Context
 
-An interactor runs based on a given context. The context contains everything the interactor needs to do its work.
+An interactor runs based on a given context. The context contains the information information the interactor needs to do its work. An interactor may affect its passed context, providing data from within the interactor back to the caller.
 
-When an interactor calls its single purpose, it may affect the passed context.
+All contexts extend the `Deefour\Transformer\MutableTransformer` from the [`deefour/transformer`](https://github.com/deefour/transformer) package. The `MutableTransformer` provides conveient access and mutation of the underlying data, including but not limited to implementations of `ArrayAccess` and `JsonSerializable`.
 
-The context can be an associative array or an implementation of `\Deefour\Interactor\Context`.
+### Accessing the Context
 
-### Adding to the Context
+Within an interactor, the context is available via public accessor.
+
+```php
+$this->context();
+$this->context()->make; //=> 'Honda'
+```
+
+### Modifying the the Context
 
 As an interactor runs it can add information to the context.
 
@@ -67,52 +74,85 @@ As an interactor runs it can add information to the context.
 $this->context()->car = new Car;
 ```
 
-### Requiring a Specific Context
+This can be very useful to provide data back to the caller.
 
-The default implementation of the interactor's constructor allows accepts any valid context.
+### Permitted Attributes
+
+Performing safe mass assignment is easy thanks to the `MutableTransformer`.
 
 ```php
-new CreateCar([ 'make' => 'Honda', 'model' => 'Accord' ]);
+$car       = new Car;
+$permitted = $this->context()->only($this->car->getFillable());
+
+$car->fill($permitted);
+
+$car->save();
 ```
 
-This constructor can be overriden with a type-hinted context parameter to require a specific type of context be passed.
+The example above fetches only the properties on the source dta that match the white-listed mass-assignable attributes on the `Car` model.
+
+### Specific Context Requirements
+
+The default constructor expects a single array of attributes as key/value pairs.
 
 ```php
-public function __construct(CarContext $context = null) {
-  return parent::__construct($context);
+public function __construct(array $attributes = []) {
+  $this->attributes = $attributes;
 }
 ```
 
-An implemenation of `CarContext` could then **require** a `$make` and `$model` be set on the context.
+It's a good idea to be explicit though about more concrete dependencies. For example, if an `CreateCar` interactor expects to assign an owner to the `Car` it creates, it is a good idea to require that on the context.
 
 ```php
 use Deefour\Interactor\Context;
 
 class CarContext extends Context {
 
-  public $make;
+  public $user;
 
-  public $model;
+  public function __construct(User $user, array $attributes = []) {
+    $this->user = $user;
 
-  public function __construct($make, $model) {
-    $this->make  = $make;
-    $this->model = $model;
+    parent::__construct($attributes);
   }
 
 }
 ```
 
-The property assignments in the constructor could alternatively be delegated back to the `Deefour\Interactor\Context` superclass via [`get_defined_vars()`](http://php.net/manual/en/function.get-defined-vars.php). This is useful for contexts with many arguments in the constructor signature.
+#### The Context Factory
 
+While manually instantiating contexts is fine, a `ContextFactory` is available to help. Simply pass a fully qualified class name of the context to be instantiated along with a set of attributes/parameters to the `create()` method.
+
+```php
+use App\User;
+use Deefour\Interactor\ContextFactory;
+
+$user       = User::find(34);
+$attributes = [ 'make' => 'Honda', 'model' => 'Accord' ];
+
+$context = ContextFactory::create(CarContext::class, compact('user', 'attributes'));
+
+$context->user->id; //=> 34
+$context->make;     //=> 'Honda'
 ```
-public function __construct($make, $model) {
-  parent::__construct(get_defined_vars());
-}
+
+Explicitly specifying an `'attributes'` parameter isn't necessary. Any keys in the array of source data passed to the factory that do not match the name of a parameter on the constructor will be pushed into an `'attributes'` parameter. If you provide an `'attributes'` parameter manually in addition to extra data, they'll be merged together.
+
+> **Note:** Taking advantage of this requires an `$attributes` parameter be available on the constructor of the context class being instantiated through the factory.
+
+```php
+use App\User;
+use Deefour\Interactor\ContextFactory;
+
+$user       = User::find(34);
+$attributes = [ 'make' => 'Honda', 'model' => 'Accord' ];
+$source     = array_merge(compact('user'), $attributes, [ 'foo' => 'bar' ]);
+
+$context = ContextFactory::create(CarContext::class, $source);
+
+$context->make; //=> 'Honda'
+$context->foo;  //=> 'bar'
 ```
-
-This will pass an array like `[ 'make' => 'Honda', 'model' => 'Accord' ]` up to the base context where assignment to the public properties will be called.
-
-> It's good practice to explicitly define public properties for the arguments you want exposed to your interactor.
 
 ## Status
 
@@ -167,7 +207,7 @@ public function create(CreateRequest $request) {
 Within Laravel 5 a command can be treated as in interactor. The constructor and `handle()` methods both have type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a command in Laravel 5 might look as follows:
 
 ```php
-namespace App\Commands;
+namespace App\Jobs;
 
 use App\Car;
 use App\Contexts\CreateCarContext as CarContext;
@@ -192,9 +232,10 @@ class CreateCar extends Interactor implements SelfHandling {
    * @return void
    */
   public function handle(Redis $redis) {
-    $c->car = Car::create([ 'make' => $c->make, 'model' => $c->model ]);
+    $c      = $this->context();
+    $c->car = Car::create($c->only('make', 'model'));
 
-    $redis->publish('A new' . (string)$car . ' was just added to the lot!');
+    $redis->publish('A new' . (string)$c->car . ' was just added to the lot!');
 
     return $this->context();
   }
@@ -217,9 +258,7 @@ class CarController extends BaseController {
   use DispatchesInteractors;
 
   public function create(Request $request) {
-    $context = new CarContext($request->get('make'), $request->get('model'));
-
-    $this->dispatchInteractor(CreateCar::class, $context);
+    $this->dispatchInteractor(CreateCar::class, CarContext::class, $request->only('make', 'model'));
 
     if ($context->ok()) {
       return 'Wow! Nice new ' . $context->car->make;
@@ -237,6 +276,14 @@ class CarController extends BaseController {
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+#### 0.6.0 - May 30, 2015
+
+ - New `ContextFactory` for creating context objects.
+ - Now has `deefour/transformer` as dependency.
+ - `Context` now exteds `MutableTransformer`. This class no longer implements `ArrayAccess` directly.
+ - `attributes()` method on `Context` has been removed. Use `all()` or `raw()` *(for non-transformed version of attributes)* instead.
+ - `Interactor` has been simplified, using only type-hints to enforce proper context for an interactor.
 
 #### 0.5.0 - May 25, 2015
 
@@ -271,11 +318,3 @@ class CarController extends BaseController {
 ## License
 
 Copyright (c) 2014 [Jason Daly](http://www.deefour.me) ([deefour](https://github.com/deefour)). Released under the [MIT License](http://deefour.mit-license.org/).
-
-
-
-
-
-
-
-

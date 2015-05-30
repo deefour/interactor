@@ -1,8 +1,6 @@
 <?php namespace Deefour\Interactor;
 
-use Deefour\Interactor\Exception\ContextResolution as ContextResolutionException;
-use Exception;
-use ReflectionMethod;
+use Deefour\Interactor\Exception\Failure;
 
 abstract class Interactor {
 
@@ -17,10 +15,10 @@ abstract class Interactor {
    * Configure the interactor, binding a context object and defaulting the state
    * of the interactor to passing/OK.
    *
-   * @param  Context|array $context [optional]
+   * @param  Context $context [optional]
    */
-  public function __construct($context = [ ]) {
-    $this->setContext($context);
+  public function __construct(Context $context) {
+    $this->context = $context;
   }
 
   /**
@@ -33,64 +31,20 @@ abstract class Interactor {
   }
 
   /**
-   * Setter for the context object on the interactor
+   * Convenience method to fail the interactor, passing through to the Context.
    *
-   * @param  Context|array $context
-   *
-   * @return Interactor
-   * @throws ContextResolutionException
+   * @throws Failure
    */
-  public function setContext($context) {
-    $contextClass = $this->contextClass();
-
-    if (is_array($context)) {
-      $context = new Context($context);
-    }
-
-    if ( ! is_null($contextClass) and ! is_a($context, $contextClass)) {
-      throw new ContextResolutionException(sprintf('A context class of type `%s` is required for this interactor.', $contextClass));
-    }
-
-    $this->context = $context;
-
-    return $this;
-  }
-
-  /**
-   * Determine the FQCN of the context class type-hinted on the constructor's
-   * method signature.
-   *
-   * @return string
-   * @throws ContextResolutionException
-   */
-  protected function contextClass() {
-    $constructor = new ReflectionMethod($this, '__construct');
-    $parameters  = $constructor->getParameters();
-
-    foreach ($parameters as $parameter) {
-      if (is_null($parameter->getClass())) {
-        continue;
-      }
-
-      $className = $parameter->getClass()->name;
-
-      if (is_a($className, Context::class, true)) {
-        return $className;
-      }
-    }
-
-    return null;
+  protected function fail() {
+    $this->context()->fail();
   }
 
   /**
    * Process the business logic this interactor exists to handle, using the
    * bound context for support.
    *
-   * @return Interactor
-   * @throws Exception
+   * @return void
    */
-  public function call() {
-    throw new Exception('No call method is defined!');
-  }
+  abstract public function call();
 
 }

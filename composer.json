@@ -6,13 +6,11 @@
   "keywords": ["interactor", "deefour", "service object", "dto", "laravel"],
   "license": "MIT",
   "require": {
-    "php": ">=5.5.0"
+    "php": ">=5.5.0",
+    "deefour/transformer": "dev-master"
   },
   "require-dev": {
     "phpspec/phpspec": "^2.2.0"
-  },
-  "suggest": {
-    "deefour/transformer": "A more flexible, consistent alternative to passing raw input into an context."
   },
   "license": "MIT",
   "authors": [
@@ -25,6 +23,11 @@
   "autoload": {
     "psr-4": {
       "Deefour\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Deefour\\Interactor\\Stub\\": "stub"
     }
   }
 }

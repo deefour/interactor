@@ -2,5 +2,5 @@
 
 use Exception;
 
-class ContextResolution extends Exception {
+class MarshalException extends Exception {
 }
