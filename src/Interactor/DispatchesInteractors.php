@@ -10,13 +10,14 @@ trait DispatchesInteractors {
    *
    * All failures are currently suppressed.
    *
-   * @param  Interactor|string         $interactor
-   * @param  Context|Transformer|array $context [optional]
+   * @param  Interactor|string $interactor
+   * @param  Context|array     $context [optional]
+   * @param  array             $attributes
    *
    * @return Context
    */
-  public function dispatchInteractor($interactor, $context = null) {
-    $context    = ContextFactory::create($context);
+  public function dispatchInteractor($interactor, $context = Context::class, array $attributes = [ ]) {
+    $context    = ContextFactory::create($context, $attributes);
     $interactor = app()->make($interactor, compact('context'));
 
     try {
