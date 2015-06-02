@@ -3,3 +3,4 @@ suites:
     namespace: Deefour\Interactor
     psr4_prefix: Deefour\Interactor
     src_path: src
+formatter.name: pretty
