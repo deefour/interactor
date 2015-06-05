@@ -1,25 +1,27 @@
-<?php namespace Deefour\Interactor\Exception;
+<?php
+
+namespace Deefour\Interactor\Exception;
 
 use Deefour\Interactor\Context;
 use Exception;
 
-class Failure extends Exception {
+class Failure extends Exception
+{
+    /**
+     *
+     */
+    protected $context;
 
-  /**
-   *
-   */
-  protected $context;
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param string  $message [optional]
+     */
+    public function __construct(Context $context, $message = '')
+    {
+        $this->context = $context;
 
-  /**
-   * Constructor
-   *
-   * @param  Context $context
-   * @param  string  $message [optional]
-   */
-  public function __construct(Context $context, $message = '') {
-    $this->context = $context;
-
-    parent::__construct($message);
-  }
-
+        parent::__construct($message);
+    }
 }

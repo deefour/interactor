@@ -1,19 +1,22 @@
-<?php namespace Deefour\Interactor\Stub\Contexts;
+<?php
+
+namespace Deefour\Interactor\Stub\Contexts;
 
 use Deefour\Interactor\Context;
 use Deefour\Interactor\Stub\FooDependency;
 
-class DependencyContext extends Context {
+class DependencyContext extends Context
+{
+    public $make;
 
-  public $make;
+    public $model;
 
-  public $model;
+    public $foo;
 
-  public $foo;
-
-  public function __construct($make, $model, FooDependency $foo, array $attributes = [ ]) {
-    $this->make  = $make;
-    $this->model = $model;
-    $this->foo   = $foo;
-  }
+    public function __construct($make, $model, FooDependency $foo, array $attributes = [])
+    {
+        $this->make  = $make;
+        $this->model = $model;
+        $this->foo   = $foo;
+    }
 }

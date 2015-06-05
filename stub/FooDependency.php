@@ -1,4 +1,7 @@
-<?php namespace Deefour\Interactor\Stub;
+<?php
 
-class FooDependency {
+namespace Deefour\Interactor\Stub;
+
+class FooDependency
+{
 }

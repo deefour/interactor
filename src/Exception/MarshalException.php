@@ -1,6 +1,9 @@
-<?php namespace Deefour\Interactor\Exception;
+<?php
+
+namespace Deefour\Interactor\Exception;
 
 use Exception;
 
-class MarshalException extends Exception {
+class MarshalException extends Exception
+{
 }
