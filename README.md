@@ -11,7 +11,7 @@ Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://
 Add Interactor to your `composer.json` file and run `composer update`. See [Packagist](https://packagist.org/packages/deefour/Interactor) for specific versions.
 
 ```
-"deefour/interactor": "~0.6.1"
+"deefour/interactor": "~0.6.2"
 ```
 
 **`>=PHP5.5.0` is required.**
@@ -276,6 +276,10 @@ class CarController extends BaseController {
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+#### 0.6.2 - June 5, 2015
+
+ - Now following PSR-2.
 
 #### 0.6.0 - May 30, 2015
 
