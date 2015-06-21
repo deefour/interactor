@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/deefour/interactor.svg)](https://travis-ci.org/deefour/interactor)
 [![Packagist Version](http://img.shields.io/packagist/v/deefour/interactor.svg)](https://packagist.org/packages/deefour/interactor)
 [![Code Climate](https://codeclimate.com/github/deefour/interactor/badges/gpa.svg)](https://codeclimate.com/github/deefour/interactor)
+[![License](https://poser.pugx.org/deefour/interactor/license.svg)](https://packagist.org/packages/deefour/interactor)
 
 Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://github.com/collectiveidea/interactor).
 
@@ -36,14 +37,14 @@ The below interactor creates a new `Car`.
 ```php
 use Deefour\Interactor\Interactor;
 
-class CreateCar extends Interactor 
+class CreateCar extends Interactor
 {
     /**
      * Perform the action.
      *
      * @return void
      */
-    public function call() 
+    public function call()
     {
         $c = $this->context();
 
@@ -111,7 +112,7 @@ It's a good idea to be explicit though about more concrete dependencies. For exa
 ```php
 use Deefour\Interactor\Context;
 
-class CarContext extends Context 
+class CarContext extends Context
 {
     /**
      * The owner of the vehicle.
@@ -126,7 +127,7 @@ class CarContext extends Context
      * @param User  $user
      * @param array $attributes [optional]
      */
-    public function __construct(User $user, array $attributes = []) 
+    public function __construct(User $user, array $attributes = [])
     {
         $this->user = $user;
 
@@ -205,7 +206,7 @@ echo get_class($c->status()); //=> 'Deefour\Interactor\Status\Error'
 Within a controller, implementing the car creation through the `CreateCar` interactor might look like this.
 
 ```php
-public function create(CreateRequest $request) 
+public function create(CreateRequest $request)
 {
     $context = new CarContext($request->get('make'), $request->get('model'));
 
@@ -274,18 +275,18 @@ The `RegisterUser` organizer expects an instance of `RegisterUserContext`, a com
 ```php
 use Deefour\Interactor\CompositeContext;
 
-class RegisterUserContext extends CompositeContext 
+class RegisterUserContext extends CompositeContext
 {
     /**
      * Constructor.
      *
      * {@inheritdoc}
-     * 
+     *
      * @param CreateUserContext    $createUser
      * @param CreateVehicleContext $createVehicle
      */
     public function __construct(
-        CreateUserContext $createUser, 
+        CreateUserContext $createUser,
         CreateVehicleContext $createVehicle
     ) {
         parent::__construct(func_get_args());
@@ -325,7 +326,7 @@ class RegisterUser extends Organizer
 }
 ```
 
-The `$this->getContext(...)` call is a convenient alternative to `$this->context()->get(...)`. 
+The `$this->getContext(...)` call is a convenient alternative to `$this->context()->get(...)`.
 
 Unlike a normal interactor, the `call()` method on an organizer is already implemented. When called, this organizer will perform interactors in the order they were pushed onto the queue in the `organize()` method.
 
@@ -362,14 +363,14 @@ use Illuminate\Contracts\Bus\SelfHandling;
 use Deefour\Interactor\Interactor;
 use Illuminate\Contracts\Redis\Database as Redis;
 
-class CreateCar extends Interactor implements SelfHandling 
+class CreateCar extends Interactor implements SelfHandling
 {
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(CarContext $context) 
+    public function __construct(CarContext $context)
     {
         parent::__construct($context);
     }
@@ -379,7 +380,7 @@ class CreateCar extends Interactor implements SelfHandling
      *
      * @return void
      */
-    public function handle(Redis $redis) 
+    public function handle(Redis $redis)
     {
         $c      = $this->context();
         $c->car = Car::create($c->only('make', 'model'));
@@ -401,7 +402,7 @@ use App\Context\Car as CarContext;
 use Deefour\Interactor\DispatchesInteractors;
 use Illuminate\Http\Request;
 
-class CarController extends BaseController 
+class CarController extends BaseController
 {
 
     use DispatchesInteractors;
@@ -412,7 +413,7 @@ class CarController extends BaseController
      * @param Request $request
      * @return string
      */
-    public function store(Request $request) 
+    public function store(Request $request)
     {
         $this->dispatchInteractor(CreateCar::class, CarContext::class, $request->only('make', 'model'));
 
