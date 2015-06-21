@@ -45,8 +45,15 @@ abstract class Interactor
     }
 
     /**
-     * Process the business logic this interactor exists to handle, using the
-     * bound context for support.
+     * {@inheritdoc}
      */
     abstract public function call();
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rollback()
+    {
+        //
+    }
 }

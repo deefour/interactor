@@ -11,7 +11,7 @@ Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://
 Add Interactor to your `composer.json` file and run `composer update`. See [Packagist](https://packagist.org/packages/deefour/Interactor) for specific versions.
 
 ```
-"deefour/interactor": "~0.6.2"
+"deefour/interactor": "~0.7.0"
 ```
 
 **`>=PHP5.5.0` is required.**
@@ -36,18 +36,23 @@ The below interactor creates a new `Car`.
 ```php
 use Deefour\Interactor\Interactor;
 
-class CreateCar extends Interactor {
+class CreateCar extends Interactor 
+{
+    /**
+     * Perform the action.
+     *
+     * @return void
+     */
+    public function call() 
+    {
+        $c = $this->context();
 
-  public function call() {
-    $c = $this->context();
+        $c->car = new Car([ 'make' => $c->make, 'model' => $c->model ]);
 
-    $c->car = new Car([ 'make' => $c->make, 'model' => $c->model ]);
-
-    if ( ! $c->car->save()) $this->fail();
-
-    return $this;
-  }
-
+        if ( ! $c->car->save()) {
+            $this->fail();
+        }
+    }
 }
 ```
 
@@ -97,7 +102,7 @@ The default constructor expects a single array of attributes as key/value pairs.
 
 ```php
 public function __construct(array $attributes = []) {
-  $this->attributes = $attributes;
+    $this->attributes = $attributes;
 }
 ```
 
@@ -106,16 +111,27 @@ It's a good idea to be explicit though about more concrete dependencies. For exa
 ```php
 use Deefour\Interactor\Context;
 
-class CarContext extends Context {
+class CarContext extends Context 
+{
+    /**
+     * The owner of the vehicle.
+     *
+     * @var User
+     */
+    public $user;
 
-  public $user;
+    /**
+     * Constructor.
+     *
+     * @param User  $user
+     * @param array $attributes [optional]
+     */
+    public function __construct(User $user, array $attributes = []) 
+    {
+        $this->user = $user;
 
-  public function __construct(User $user, array $attributes = []) {
-    $this->user = $user;
-
-    parent::__construct($attributes);
-  }
-
+        parent::__construct($attributes);
+    }
 }
 ```
 
@@ -189,22 +205,140 @@ echo get_class($c->status()); //=> 'Deefour\Interactor\Status\Error'
 Within a controller, implementing the car creation through the `CreateCar` interactor might look like this.
 
 ```php
-public function create(CreateRequest $request) {
-  $context = new CarContext($request->get('make'), $request->get('model'));
+public function create(CreateRequest $request) 
+{
+    $context = new CarContext($request->get('make'), $request->get('model'));
 
-  (new CreateCar($context))->call();
+    (new CreateCar($context))->call();
 
-  if ($context->ok()) {
-    echo 'Wow! Nice new ' . $context->car->make;
-  } else {
-    echo 'ERROR: ' . $context->status()->error();
-  }
+    if ($context->ok()) {
+        echo 'Wow! Nice new ' . $context->car->make;
+    } else {
+        echo 'ERROR: ' . $context->status()->error();
+    }
 }
 ```
 
+## Organizers
+
+Complex scenarios may require the use of multiple interactors in sequence. If a registration form asks for a user's email, password, and VIN of their car, the submission will register a new user account and create a new vehicle for the user based on the VIN. These two actions are best broken up into a `CreateUser` and a `CreateVehicle` interactor. An organizer can be used to queue multiple interactors together.
+
+An organizer will run through each interactor it is composed of in the order they are added. If an interactor fails, the organizer will also be considered failed, and an attempt will be made to rollback the actions performed in reverse order. The rollback will **not** be performed on the failing interactor.
+
+### Combining Contexts via a CompositeContext
+
+A composite context extends from the main `Deefour\Interactor\Context` class that expects to be initialized with one or more other contexts. It provides a special mapping during initialization between the passed context objects and their FQCN.
+
+In the example above, the `CreateUser` and `CreateVehicle` interactors will respectively require a `CreateUserContext` and `CreateVehicleContext`.
+
+```php
+use Deefour\Interactor\Context;
+
+class CreateUserContext extends Context
+{
+    /**
+     * {@inheritdoc}
+     *
+     * @param User   $user
+     * @param string $vin
+     * @param array  $attributes
+     */
+    public function __construct(User $user, array $attributes)
+    {
+        parent::__construct($user, $attributes);
+    }
+}
+```
+
+```php
+use Deefour\Interactor\Context;
+
+class CreateVehicleContext extends Context
+{
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $vin The vin number for the vehicle.
+     * @param array $attributes Additional attributes
+     */
+    public function __construct($vin, array $attributes)
+    {
+        parent::__construct(array_merge($attributes, compact('vin')));
+    }
+}
+```
+
+
+The `RegisterUser` organizer expects an instance of `RegisterUserContext`, a composite context.
+
+```php
+use Deefour\Interactor\CompositeContext;
+
+class RegisterUserContext extends CompositeContext 
+{
+    /**
+     * Constructor.
+     *
+     * {@inheritdoc}
+     * 
+     * @param CreateUserContext    $createUser
+     * @param CreateVehicleContext $createVehicle
+     */
+    public function __construct(
+        CreateUserContext $createUser, 
+        CreateVehicleContext $createVehicle
+    ) {
+        parent::__construct(func_get_args());
+    }
+}
+```
+
+### Combining Interactors via an Organizer
+
+To create an organizer, extend `Deefour\Interactor\Organizer`, typehint a composite context on the constructor, and implement an `organize()` method that pushes interactors onto the queue.
+
+```php
+use Deefour\Interactor\Organizer;
+
+class RegisterUser extends Organizer
+{
+    /**
+     * Constructor.
+     *
+     * @param RegisterUserContext $context A composite context for the organizer.
+     */
+    public function __construct(RegisterUserContext $context)
+    {
+        parent::__construct($context);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Create the new user and their first vehicle.
+     */
+    public function organize()
+    {
+        $this->addInteractor(new CreateUser($this->getContext(CreateUserContext::class)));
+        $this->addInteractor(new CreateVehicle($this->getContext(CreateVehicleContext::class)));
+    }
+}
+```
+
+The `$this->getContext(...)` call is a convenient alternative to `$this->context()->get(...)`. 
+
+Unlike a normal interactor, the `call()` method on an organizer is already implemented. When called, this organizer will perform interactors in the order they were pushed onto the queue in the `organize()` method.
+
+### Organizer Failure and Rollback
+
+If a failure occurs during the execution of an organizer, `rollback()` will be called on each interactor that ran successfully prior to the failure, in reverse order. Override the empty `rollback()` method on `Deefour\Interactor\Interactor` to take advantage of this.
+
+> **Note:** The `rollback()` method is **not** called when an interactor is executed on it's own, though it can be called manually by testing for failure on the context.
+
+
 ### Integration With Laravel 5
 
-Within Laravel 5 a command can be treated as in interactor. The constructor and `handle()` methods both have type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a command in Laravel 5 might look as follows:
+Within Laravel 5 a job can be treated as in interactor. The `handle()` method has type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a job in Laravel 5 might look as follows:
 
 ```php
 namespace App\Jobs;
@@ -215,31 +349,32 @@ use Illuminate\Contracts\Bus\SelfHandling;
 use Deefour\Interactor\Interactor;
 use Illuminate\Contracts\Redis\Database as Redis;
 
-class CreateCar extends Interactor implements SelfHandling {
+class CreateCar extends Interactor implements SelfHandling 
+{
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct(CarContext $context) 
+    {
+        parent::__construct($context);
+    }
 
-  /**
-   * Create a new command instance.
-   *
-   * @return void
-   */
-  public function __construct(CarContext $context) {
-    parent::__construct($context);
-  }
+    /**
+     * Execute the command.
+     *
+     * @return void
+     */
+    public function handle(Redis $redis) 
+    {
+        $c      = $this->context();
+        $c->car = Car::create($c->only('make', 'model'));
 
-  /**
-   * Execute the command.
-   *
-   * @return void
-   */
-  public function handle(Redis $redis) {
-    $c      = $this->context();
-    $c->car = Car::create($c->only('make', 'model'));
+        $redis->publish('A new' . (string)$c->car . ' was just added to the lot!');
 
-    $redis->publish('A new' . (string)$c->car . ' was just added to the lot!');
-
-    return $this->context();
-  }
-
+        return $this->context();
+    }
 }
 ```
 
@@ -253,20 +388,27 @@ use App\Context\Car as CarContext;
 use Deefour\Interactor\DispatchesInteractors;
 use Illuminate\Http\Request;
 
-class CarController extends BaseController {
+class CarController extends BaseController 
+{
 
-  use DispatchesInteractors;
+    use DispatchesInteractors;
 
-  public function create(Request $request) {
-    $this->dispatchInteractor(CreateCar::class, CarContext::class, $request->only('make', 'model'));
+    /**
+     * Create a new resource.
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function store(Request $request) 
+    {
+        $this->dispatchInteractor(CreateCar::class, CarContext::class, $request->only('make', 'model'));
 
-    if ($context->ok()) {
-      return 'Wow! Nice new ' . $context->car->make;
-    } else {
-      return 'ERROR: ' . $interactor->status()->error();
+        if ($context->ok()) {
+            return 'Wow! Nice new ' . $context->car->make;
+        } else {
+            return 'ERROR: ' . $interactor->status()->error();
+        }
     }
-  }
-
 }
 ```
 
@@ -276,6 +418,10 @@ class CarController extends BaseController {
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+#### 0.7.0 - June 21, 2015
+
+ - New `Organizer` and `CompositeContext` for grouping interactors together.
 
 #### 0.6.2 - June 5, 2015
 

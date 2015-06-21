@@ -10,7 +10,7 @@ use PhpSpec\ObjectBehavior;
 
 class PlainContextSpec extends ObjectBehavior
 {
-  protected $source = ['foo' => true, 'bar' => false];
+    protected $source = ['foo' => true, 'bar' => false];
 
     public function let()
     {

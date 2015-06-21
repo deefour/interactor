@@ -4,7 +4,7 @@ namespace Deefour\Interactor\Stub\Contexts;
 
 use Deefour\Interactor\Context;
 
-class PropertyContext extends Context
+class CreateVehicleContext extends Context
 {
     public $make;
 
@@ -14,5 +14,7 @@ class PropertyContext extends Context
     {
         $this->make  = $make;
         $this->model = $model;
+        
+        parent::__construct([ 'called' => false ]);
     }
 }
