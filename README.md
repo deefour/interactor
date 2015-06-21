@@ -329,6 +329,19 @@ The `$this->getContext(...)` call is a convenient alternative to `$this->context
 
 Unlike a normal interactor, the `call()` method on an organizer is already implemented. When called, this organizer will perform interactors in the order they were pushed onto the queue in the `organize()` method.
 
+### Executing an Organizer
+
+An organizer is executed like any other interactor. Call the `call()` method to kick things off after instantiation.
+
+```php
+$context = new RegisterUserContext(
+    new CreateUserContext($request->all()),
+    new CreateVehicleContext($request->get('vin'))
+);
+
+(new RegisterUser($context))->call();
+```
+
 ### Organizer Failure and Rollback
 
 If a failure occurs during the execution of an organizer, `rollback()` will be called on each interactor that ran successfully prior to the failure, in reverse order. Override the empty `rollback()` method on `Deefour\Interactor\Interactor` to take advantage of this.
@@ -338,7 +351,7 @@ If a failure occurs during the execution of an organizer, `rollback()` will be c
 
 ### Integration With Laravel 5
 
-Within Laravel 5 a job can be treated as in interactor. The `handle()` method has type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a job in Laravel 5 might look as follows:
+Within Laravel 5 a job can be treated as in interactor or organizer. The `handle()` method has type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a job in Laravel 5 might look as follows:
 
 ```php
 namespace App\Jobs;
