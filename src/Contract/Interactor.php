@@ -24,13 +24,4 @@ interface Interactor
      * Rollback changes.
      */
     public function rollback();
-
-    /**
-     * Convenience method to fail the interactor, passing through to the Context.
-     *
-     * @param string $message [optional]
-     * @throws Failure
-     * @return void
-     */
-    public function fail($message = null);
 }

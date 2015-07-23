@@ -31,7 +31,11 @@ abstract class Interactor
     }
 
     /**
-     * {@inheritdoc}
+     * Convenience method to fail the interactor, passing through to the Context.
+     *
+     * @param string $message [optional]
+     * @throws Failure
+     * @return void
      */
     protected function fail($message = null)
     {
