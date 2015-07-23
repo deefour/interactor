@@ -51,7 +51,7 @@ class CreateCar extends Interactor
         $c->car = new Car([ 'make' => $c->make, 'model' => $c->model ]);
 
         if ( ! $c->car->save()) {
-            $this->fail();
+            $this->fail('Creating the car failed!');
         }
     }
 }
