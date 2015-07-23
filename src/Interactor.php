@@ -2,8 +2,6 @@
 
 namespace Deefour\Interactor;
 
-use Deefour\Interactor\Exception\Failure;
-
 abstract class Interactor
 {
     /**
@@ -25,9 +23,7 @@ abstract class Interactor
     }
 
     /**
-     * Getter for the context object bound to the interactor.
-     *
-     * @return Context
+     * {@inheritdoc}
      */
     public function context()
     {
@@ -35,13 +31,11 @@ abstract class Interactor
     }
 
     /**
-     * Convenience method to fail the interactor, passing through to the Context.
-     *
-     * @throws Failure
+     * {@inheritdoc}
      */
-    protected function fail()
+    protected function fail($message = null)
     {
-        $this->context()->fail();
+        $this->context()->fail($message);
     }
 
     /**
