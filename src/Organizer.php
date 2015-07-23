@@ -62,7 +62,7 @@ abstract class Organizer extends Interactor implements InteractorContract
         } catch (Failure $e) {
             $this->rollback();
 
-            $this->fail($e);
+            $this->fail($e->getMessage());
 
             throw $e; // re-throw
         }
