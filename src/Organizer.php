@@ -24,7 +24,7 @@ abstract class Organizer extends Interactor implements InteractorContract
      *
      * @var array
      */
-    private $completed = [];
+    protected $completed = [];
 
     /**
      * Constructor.
