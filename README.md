@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/deefour/interactor.svg)](https://travis-ci.org/deefour/interactor)
 [![Packagist Version](http://img.shields.io/packagist/v/deefour/interactor.svg)](https://packagist.org/packages/deefour/interactor)
 [![Code Climate](https://codeclimate.com/github/deefour/interactor/badges/gpa.svg)](https://codeclimate.com/github/deefour/interactor)
-[![License](https://poser.pugx.org/deefour/interactor/license.svg)](https://packagist.org/packages/deefour/interactor)
+[![License](https://poser.pugx.org/deefour/interactor/license)](https://packagist.org/packages/deefour/interactor)
 
 Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://github.com/collectiveidea/interactor).
 
