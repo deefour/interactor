@@ -6,7 +6,7 @@
   "license": "MIT",
   "require": {
     "php": ">=5.5.0",
-    "deefour/transformer": "^0.2.7"
+    "deefour/transformer": "^0.3.0"
   },
   "require-dev": {
     "phpspec/phpspec": "^2.2.0"
