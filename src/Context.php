@@ -87,4 +87,14 @@ class Context extends MutableTransformer
 
         return $this->get($attribute);
     }
+
+    /**
+     * Convenience for the message on the underlying status object.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->status()->__toString();
+    }
 }

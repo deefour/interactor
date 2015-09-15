@@ -71,4 +71,9 @@ class PlainContextSpec extends ObjectBehavior
 
         $this->raw('foo')->shouldBe('omg!');
     }
+
+    public function it_should_print_status_message_when_cast_to_string()
+    {
+      $this->__toString()->shouldBe('OK');
+    }
 }
