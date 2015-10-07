@@ -433,6 +433,10 @@ class CarController extends BaseController
 
 ## Changelog
 
+#### 1.0.0 - October 7, 2015
+
+ - Release 1.0.0.
+
 #### 0.7.0 - June 21, 2015
 
  - New `Organizer` and `CompositeContext` for grouping interactors together.
