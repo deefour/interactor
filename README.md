@@ -415,7 +415,7 @@ class CarController extends BaseController
      */
     public function store(Request $request)
     {
-        $this->dispatchInteractor(CreateCar::class, CarContext::class, $request->only('make', 'model'));
+        $context = $this->dispatchInteractor(CreateCar::class, CarContext::class, $request->only('make', 'model'));
 
         if ($context->ok()) {
             return 'Wow! Nice new ' . $context->car->make;
