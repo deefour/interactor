@@ -386,7 +386,7 @@ class CarController extends BaseController
         if ($context->ok()) {
             return 'Wow! Nice new ' . $context->car->make;
         } else {
-            return 'ERROR: ' . $interactor->status()->error();
+            return 'ERROR: ' . $context->status()->error();
         }
     }
 }
