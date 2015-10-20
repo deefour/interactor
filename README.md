@@ -9,10 +9,10 @@ Simple PHP Service Objects. Inspired by [collectiveidea/**interactor**](https://
 
 ## Getting Started
 
-Add Interactor to your `composer.json` file and run `composer update`. See [Packagist](https://packagist.org/packages/deefour/Interactor) for specific versions.
+Run the following to add Interactor to your project's `composer.json`. See [Packagist](https://packagist.org/packages/deefour/interactor) for specific versions.
 
-```
-"deefour/interactor": "~0.7.0"
+```bash
+composer require deefour/interactor
 ```
 
 **`>=PHP5.5.0` is required.**
