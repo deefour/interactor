@@ -7,8 +7,7 @@ use Deefour\Interactor\Exception\Failure;
 trait DispatchesInteractors
 {
     /**
-     * Injects context into the command object (the interactor), and passes it on
-     * through Laravel's Command Bus.
+     * Injects context into the interactor and calls [call] on it.
      *
      * All failures are currently suppressed.
      *
@@ -21,7 +20,7 @@ trait DispatchesInteractors
     public function dispatchInteractor($interactor, $context = Context::class, array $attributes = [])
     {
         $context    = ContextFactory::create($context, $attributes);
-        $interactor = app()->make($interactor, compact('context'));
+        $interactor = new $interactor($context);
 
         try {
             $this->dispatch($interactor);
@@ -35,9 +34,12 @@ trait DispatchesInteractors
     /**
      * Dispatch a command to its appropriate handler.
      *
-     * @param mixed $command
+     * @param mixed $interactor
      *
      * @return mixed
      */
-    abstract public function dispatch($command);
+    public function dispatch($interactor)
+    {
+        $interactor->call();
+    }
 }

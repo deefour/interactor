@@ -45,7 +45,10 @@ abstract class Interactor
     /**
      * {@inheritdoc}
      */
-    abstract public function call();
+    public function call()
+    {
+        //
+    }
 
     /**
      * {@inheritdoc}

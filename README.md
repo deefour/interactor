@@ -25,10 +25,10 @@ An interactor is a simple, single-purpose object.
 
 Interactors are used to encapsulate your application's [business logic](http://en.wikipedia.org/wiki/Business_logic). Each interactor represents one thing that your application does.
 
-An interactor must
+An interactor
 
- 1. Extend `\Deefour\Interactor\Interactor`
- 2. Implement a `call()` method.
+ 1. Extends `Deefour\Interactor\Interactor`
+ 2. Implements a `call()` method
 
 ### An Example
 
@@ -102,7 +102,8 @@ The example above fetches only the properties on the source dta that match the w
 The default constructor expects a single array of attributes as key/value pairs.
 
 ```php
-public function __construct(array $attributes = []) {
+public function __construct(array $attributes = [])
+{
     $this->attributes = $attributes;
 }
 ```
@@ -349,10 +350,52 @@ If a failure occurs during the execution of an organizer, `rollback()` will be c
 
 > **Note:** The `rollback()` method is **not** called when an interactor is executed on it's own, though it can be called manually by testing for failure on the context.
 
+### Dispatching Interactors
+
+Include the `Deefour\Interactor\DispatchesInteractors` trait in your controller to use the `dispatchInteractor()` method. In the example below, this trait will
+
+ 1. Resolve a new `CarContext` instance using the provided `'make'` and `'model'`
+ 2. Instantiate a new `CreateCar` instance with the newly created `CarContext`
+ 3. Call the `call()` method on the interactor
+ 4. Return the context
+
+```php
+namespace App\Controllers;
+
+use App\Interactors\CreateCar;
+use App\Contexts\CarContext;
+use Deefour\Interactor\DispatchesInteractors;
+
+class CarController extends BaseController
+{
+    use DispatchesInteractors;
+
+    /**
+     * Create a new resource.
+     *
+     * @return string
+     */
+    public function store()
+    {
+        $context = $this->dispatchInteractor(
+            CreateCar::class,
+            CarContext::class,
+            [ 'make' => 'Subaru', 'model' => 'WRX' ]
+        );
+
+        if ($context->ok()) {
+            return 'Wow! Nice new ' . $context->car->make;
+        } else {
+            return 'ERROR: ' . $interactor->status()->error();
+        }
+    }
+}
+```
+
 
 ### Integration With Laravel 5
 
-Within Laravel 5 a job can be treated as in interactor or organizer. The `handle()` method has type-hinted dependencies injected by the [IoC container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor as a job in Laravel 5 might look as follows:
+A job in Laravel 5 can be treated as in interactor or organizer. The `handle()` method on a job called through Laravel's command bus supports dependency injection through the [service container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor that takes advantage of dependency injection and Laravel's command bus might look like this:
 
 ```php
 namespace App\Jobs;
@@ -392,39 +435,23 @@ class CreateCar extends Interactor implements SelfHandling
 }
 ```
 
-Include the `Deefour\Interactor\DispatchesInteractors` trait in your controller to use the `dispatchInteractor()` method.
+Laravel needs to be told to to use it's own `dispatch()` method instead of the one provided by this library.
 
 ```php
 namespace App\Http\Controllers;
 
-use App\Commands\CreateCar;
-use App\Context\Car as CarContext;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Deefour\Interactor\DispatchesInteractors;
-use Illuminate\Http\Request;
 
 class CarController extends BaseController
 {
-
-    use DispatchesInteractors;
-
-    /**
-     * Create a new resource.
-     *
-     * @param Request $request
-     * @return string
-     */
-    public function store(Request $request)
-    {
-        $context = $this->dispatchInteractor(CreateCar::class, CarContext::class, $request->only('make', 'model'));
-
-        if ($context->ok()) {
-            return 'Wow! Nice new ' . $context->car->make;
-        } else {
-            return 'ERROR: ' . $interactor->status()->error();
-        }
+    use DispatchesJobs, DispatchesInteractors {
+      DispatchesJobs::dispatch insteadof DispatchesInteractors;
     }
 }
 ```
+
+Your jobs continue to play nicely with Laravel, now with the added functionality of an interactor.
 
 ## Contribute
 
@@ -432,6 +459,14 @@ class CarController extends BaseController
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+### 1.1.0 - October 19, 2015
+
+ - `call()` is no longer abstract; it's left as a blank stub to be overridden. This eliminates the need to define `call()` when another method is being used for business logic *(ie. when using a `handle()` to work with Laravel's command bus)*.
+ - **Breaking Chang** The `DispatchesInteractors` trait no longer resolves interactors through the service container.
+   - The trait can now be used outside the context of Laravel. A basic `dispatch()` method has been implemented to execute the `call()` method on the interactor.
+   - Within the context of Laravel, all dependency injection should be done on the `handle()` method, just like any other Laravel job. **Constructor injection is no longer supported.**
+   - Laravel must be told to use the `Illuminate\Foundation\Bus\DispatchesJobs::dispatch()` method when using both Laravel's job dispatcher and this library's interactor dispatcher. See **[Integration with Laravel](#integration-with-laravel-5)** above for more information.
 
 #### 1.0.0 - October 7, 2015
 
