@@ -460,7 +460,7 @@ Your jobs continue to play nicely with Laravel, now with the added functionality
 
 ## Changelog
 
-### 1.1.0 - October 19, 2015
+#### 1.1.0 - October 19, 2015
 
  - `call()` is no longer abstract; it's left as a blank stub to be overridden. This eliminates the need to define `call()` when another method is being used for business logic *(ie. when using a `handle()` to work with Laravel's command bus)*.
  - **Breaking Chang** The `DispatchesInteractors` trait no longer resolves interactors through the service container.
