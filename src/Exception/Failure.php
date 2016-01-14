@@ -8,7 +8,9 @@ use Exception;
 class Failure extends Exception
 {
     /**
+     * The failing context.
      *
+     * @var Context
      */
     protected $context;
 

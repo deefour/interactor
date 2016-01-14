@@ -6,8 +6,8 @@ use Deefour\Interactor\Context;
 
 class PlainContext extends Context
 {
-  public function baz()
-  {
-      return true;
-  }
+    public function baz()
+    {
+        return true;
+    }
 }

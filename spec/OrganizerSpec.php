@@ -15,7 +15,7 @@ use Deefour\Interactor\Status\Success;
 
 class OrganizerSpec extends ObjectBehavior
 {
-    function let()
+    public function let()
     {
         $a = new CreateUserContext('Jason', 'Daly');
         $b = new CreateVehicleContext('Subaru', 'WRX');
@@ -26,7 +26,7 @@ class OrganizerSpec extends ObjectBehavior
         $this->beConstructedWith($context);
     }
 
-    function it_calls_all_interactors() {
+    public function it_calls_all_interactors() {
         $this->context()->{CreateUserContext::class}->called->shouldBe(false);
 
         $this->call();
@@ -35,7 +35,7 @@ class OrganizerSpec extends ObjectBehavior
         $this->context()->{CreateVehicleContext::class}->called->shouldBe(true);
     }
 
-    function it_rolls_back_on_failure() {
+    public function it_rolls_back_on_failure() {
         $this->context()->{CreateVehicleContext::class}->should_fail = true;
 
         $this->shouldThrow(Failure::class)->during('call');

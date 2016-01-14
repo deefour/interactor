@@ -20,7 +20,8 @@ class CompositeContextSpec extends ObjectBehavior
         $this->beConstructedWith($a, $b);
     }
 
-    function it_provides_access_to_underlying_contexts_via_fqcn() {
+    public function it_provides_access_to_underlying_contexts_via_fqcn()
+    {
         $this->get(CreateUserContext::class)->shouldBeAnInstanceOf(CreateUserContext::class);
         $this->get(CreateUserContext::class)->firstName->shouldBe('Jason');
         $this->get(CreateVehicleContext::class)->model->shouldBe('WRX');

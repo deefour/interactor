@@ -11,7 +11,8 @@ class CreateUser extends Interactor
         $this->context()->called = true;
     }
 
-    public function rollback() {
+    public function rollback()
+    {
         $this->context()->rolled_back = true;
     }
 }

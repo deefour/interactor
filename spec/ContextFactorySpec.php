@@ -10,16 +10,16 @@ use PhpSpec\ObjectBehavior;
 
 class ContextFactorySpec extends ObjectBehavior
 {
-  public function it_should_construct_a_context_regardless_of_parameter_order()
-  {
-      $source  = ['bar' => 'baz', 'make' => 'foo', 'model' => 'bar'];
-      $context = $this->create(MixedContext::class, $source);
+    public function it_should_construct_a_context_regardless_of_parameter_order()
+    {
+        $source  = ['bar' => 'baz', 'make' => 'foo', 'model' => 'bar'];
+        $context = $this->create(MixedContext::class, $source);
 
-      $context->shouldBeAnInstanceOf(MixedContext::class);
-      $context->make->shouldBe('foo');
-      $context->bar->shouldBe('baz');
-      $context->raw()->shouldBe(['bar' => 'baz']);
-  }
+        $context->shouldBeAnInstanceOf(MixedContext::class);
+        $context->make->shouldBe('foo');
+        $context->bar->shouldBe('baz');
+        $context->raw()->shouldBe(['bar' => 'baz']);
+    }
 
     public function it_should_create_a_mutable_transformer_based_context_by_default()
     {

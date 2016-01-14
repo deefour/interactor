@@ -6,11 +6,11 @@ use PhpSpec\ObjectBehavior;
 
 class SuccessSpec extends ObjectBehavior
 {
-  public function let($context)
-  {
-      $context->beADoubleOf('Deefour\Interactor\Context');
-      $this->beConstructedWith($context);
-  }
+    public function let($context)
+    {
+        $context->beADoubleOf('Deefour\Interactor\Context');
+        $this->beConstructedWith($context);
+    }
 
     public function it_is_initializable()
     {

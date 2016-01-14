@@ -10,11 +10,11 @@ use PhpSpec\ObjectBehavior;
 
 class BasicInteractorSpec extends ObjectBehavior
 {
-  public function let()
-  {
-      $this->beAnInstanceOf(BasicInteractor::class);
-      $this->beConstructedWith(new PlainContext());
-  }
+    public function let()
+    {
+        $this->beAnInstanceOf(BasicInteractor::class);
+        $this->beConstructedWith(new PlainContext());
+    }
 
     public function it_provides_the_context()
     {

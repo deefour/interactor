@@ -6,11 +6,11 @@ use PhpSpec\ObjectBehavior;
 
 class ErrorSpec extends ObjectBehavior
 {
-  public function let($context)
-  {
-      $context->beADoubleOf('Deefour\Interactor\Context');
-      $this->beConstructedWith($context, 'Oops! Something went wrong.');
-  }
+    public function let($context)
+    {
+        $context->beADoubleOf('Deefour\Interactor\Context');
+        $this->beConstructedWith($context, 'Oops! Something went wrong.');
+    }
 
     public function it_is_initializable()
     {
