@@ -9,7 +9,7 @@
     "deefour/transformer": "^1.0.0"
   },
   "require-dev": {
-    "phpspec/phpspec": "^2.2.0"
+    "phpspec/phpspec": "^2.4.0"
   },
   "license": "MIT",
   "authors": [
