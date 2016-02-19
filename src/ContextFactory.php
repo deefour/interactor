@@ -32,7 +32,7 @@ class ContextFactory
         $reflection  = new ReflectionClass($context);
         $constructor = $reflection->getConstructor();
 
-        if (!$constructor) {
+        if ( ! $constructor) {
             return $reflection->newInstance();
         }
 
