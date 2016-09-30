@@ -59,17 +59,26 @@ class Context extends MutableTransformer
      * Marks the state of the interactor as failed, setting a sensible messaeg
      * to explain what went wrong.
      *
-     * @param string $message [optional]
+     * @param string|Exception $exception [optional]
      *
      * @return Interactor
      *
      * @throws Failure
      */
-    public function fail($message = null)
+    public function fail($exception = null)
     {
+        $message = null;
+
+        if( ! $exception instanceof \Exception) {
+            $message   = $exception;
+            $exception = new Failure($this, $message);
+        } else {
+            $message = $exception->getMessage();
+        }
+
         $this->status = new Error($this, $message);
 
-        throw new Failure($this, $message);
+        throw $exception;
     }
 
     /**
