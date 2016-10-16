@@ -298,7 +298,7 @@ use Deefour\Interactor\Context;
 class CreateUserContext extends Context
 {
     /**
-     * {@inheritdoc}
+     * Constructor.
      *
      * @param User   $user
      * @param string $vin
@@ -317,7 +317,7 @@ use Deefour\Interactor\Context;
 class CreateVehicleContext extends Context
 {
     /**
-     * {@inheritdoc}
+     * Constructor.
      *
      * @param string $vin The vin number for the vehicle.
      * @param array $attributes Additional attributes
@@ -339,8 +339,6 @@ class RegisterUserContext extends CompositeContext
 {
     /**
      * Constructor.
-     *
-     * {@inheritdoc}
      *
      * @param CreateUserContext    $createUser
      * @param CreateVehicleContext $createVehicle
@@ -374,8 +372,6 @@ class RegisterUser extends Organizer
     }
 
     /**
-     * {@inheritdoc}
-     *
      * Create the new user and their first vehicle.
      */
     public function organize()
