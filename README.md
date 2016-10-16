@@ -188,10 +188,17 @@ $this->context()->fail();
 $this->context()->fail('Some explicit error message here');
 ```
 
-This swaps out the `Success` status for a new `Error` status. You can ask if the state is currently successful/passing.
+**Failing a context causes a `Deefour\Interactor\Exception\Failure` exception to be thrown.**
+
+If an exception is provided it will be thrown after copying it's message over to the `Error` status set on the context.
 
 ```php
-$c = $this->context();
+try {
+    $this->context()->fail(new CarCreationException('Invalid make/model combination'));
+} catch (CarCreationException $e) {
+    (string)$this->context()->status(); //=> Invalid make/model combination
+}
+```
 
 $c->ok(); // true
 

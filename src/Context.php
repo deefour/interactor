@@ -6,6 +6,7 @@ use Deefour\Interactor\Exception\Failure;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Status\Success;
 use Deefour\Transformer\MutableTransformer;
+use Exception;
 use ReflectionMethod;
 
 /**
@@ -59,24 +60,26 @@ class Context extends MutableTransformer
      * Marks the state of the interactor as failed, setting a sensible messaeg
      * to explain what went wrong.
      *
-     * @param string $message [optional]
-     *
-     * @return Interactor
-     *
-     * @throws Failure
+     * @throws Exception
+     * @param string|Exception|null $reason
      */
-    public function fail($message = null)
+    public function fail($reason = null)
     {
-        $this->status = new Error($this, $message);
+        if ($reason instanceof Exception) {
+            $this->status = new Error($this, $reason->getMessage());
 
-        throw new Failure($this, $message);
+            throw new $reason;
+        }
+
+        $this->status = new Error($this, $reason);
+
+        throw new Failure($this, $reason);
     }
 
     /**
      * Magic property access for public methods on the context.
      *
      * @param string $attribute
-     *
      * @return mixed
      */
     public function __get($attribute)
