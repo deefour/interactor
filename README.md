@@ -50,7 +50,7 @@ class CreateCar extends Interactor
 
 ## Context
 
-An interactor runs based on a given context. The context contains the information the interactor needs to do its work. An interactor may alter the context, providing data from within the interactor back to the caller.
+An interactor runs based on a given context. The context contains the information the interactor needs to do its work. An interactor may affect its passed context, providing data from within the interactor back to the caller.
 
 All contexts extend the `Deefour\Transformer\MutableTransformer` from the [`deefour/transformer`](https://github.com/deefour/transformer) package. The `MutableTransformer` provides conveient access and mutation of the underlying data, including but not limited to implementations of `ArrayAccess` and `JsonSerializable`.
 

@@ -13,7 +13,7 @@ use ReflectionMethod;
  * Context object. Extends the Fluent class from illuminate/support,
  * making the creation and use of individual DTO's a breeze.
  *
- * The expectation is that the context objects extending this abstract class'
+ * The expectation is that the context objects extending this abstract class
  * default behavior will be to provide a type-hinted constructor signature,
  * passing the arguments up into this abstract class' constructor as a single,
  * associative array.
