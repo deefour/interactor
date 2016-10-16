@@ -15,9 +15,7 @@ Run the following to add Interactor to your project's `composer.json`. See [Pack
 composer require deefour/interactor
 ```
 
-**`>=PHP5.5.0` is required.**
-
-> **Note:** A work-in-progress attempt to explain how I use this package along with [`deefour/transformer`](https://github.com/deefour/transformer) and [`deefour/authorizer`](https://github.com/deefour/authorizer) to aide me in application development **[is available at this gist](https://gist.github.com/deefour/c6cfcebe808216a874f5)**.
+**`>=PHP5.6.0` is required.**
 
 ## What is an Interactor
 
@@ -30,20 +28,13 @@ An interactor
  1. Extends `Deefour\Interactor\Interactor`
  2. Implements a `call()` method
 
-### An Example
-
-The below interactor creates a new `Car`.
+As a simple example, the below interactor creates a new `Car`.
 
 ```php
 use Deefour\Interactor\Interactor;
 
 class CreateCar extends Interactor
 {
-    /**
-     * Perform the action.
-     *
-     * @return void
-     */
     public function call()
     {
         $c = $this->context();
@@ -59,13 +50,13 @@ class CreateCar extends Interactor
 
 ## Context
 
-An interactor runs based on a given context. The context contains the information information the interactor needs to do its work. An interactor may affect its passed context, providing data from within the interactor back to the caller.
+An interactor runs based on a given context. The context contains the information the interactor needs to do its work. An interactor may alter the context, providing data from within the interactor back to the caller.
 
 All contexts extend the `Deefour\Transformer\MutableTransformer` from the [`deefour/transformer`](https://github.com/deefour/transformer) package. The `MutableTransformer` provides conveient access and mutation of the underlying data, including but not limited to implementations of `ArrayAccess` and `JsonSerializable`.
 
 ### Accessing the Context
 
-Within an interactor, the context is available via public accessor.
+An interactor's context can be accessed via the `context()` method.
 
 ```php
 $this->context();
@@ -74,7 +65,7 @@ $this->context()->make; //=> 'Honda'
 
 ### Modifying the the Context
 
-As an interactor runs it can add information to the context.
+An interactor can add or modify the context.
 
 ```php
 $this->context()->car = new Car;
@@ -84,7 +75,7 @@ This can be very useful to provide data back to the caller.
 
 ### Permitted Attributes
 
-Performing safe mass assignment is easy thanks to the `MutableTransformer`.
+Performing safe mass assignment is easy thanks to the `MutableTransformer`'s  `only()` method.
 
 ```php
 $car       = new Car;
@@ -95,11 +86,9 @@ $car->fill($permitted);
 $car->save();
 ```
 
-The example above fetches only the properties on the source dta that match the white-listed mass-assignable attributes on the `Car` model.
-
 ### Specific Context Requirements
 
-The default constructor expects a single array of attributes as key/value pairs.
+The default context constructor expects a single array of attributes as key/value pairs.
 
 ```php
 public function __construct(array $attributes = [])
@@ -108,7 +97,7 @@ public function __construct(array $attributes = [])
 }
 ```
 
-It's a good idea to be explicit though about more concrete dependencies. For example, if an `CreateCar` interactor expects to assign an owner to the `Car` it creates, it is a good idea to require that on the context.
+An interactor often requires specific data from the provided context. For example, a `CreateCar` interactor might expect to assign an owner to the `Car` it creates. A context class should be created specifically for this Interactor requiring a user be provided during instantiation.
 
 ```php
 use Deefour\Interactor\Context;
@@ -126,7 +115,7 @@ class CarContext extends Context
      * Constructor.
      *
      * @param User  $user
-     * @param array $attributes [optional]
+     * @param array $attributes
      */
     public function __construct(User $user, array $attributes = [])
     {
@@ -137,9 +126,18 @@ class CarContext extends Context
 }
 ```
 
+The `CreateCar` interactor should expect an instance of this new `CarContext` during instantiation
+
+```php
+public function __construct(CarContext $context)
+{
+    parent::__construct($context);
+}
+```
+
 ### The Context Factory
 
-While manually instantiating contexts is fine, a `ContextFactory` is available to help. Simply pass a fully qualified class name of the context to be instantiated along with a set of attributes/parameters to the `create()` method.
+While instantiating contexts manually is the norm, the `ContextFactory` is a useful alternative in certain circumstances. Pass a fully qualified name of the context to be instantiated along with a set of attributes/parameters to the `create()` method.
 
 ```php
 use App\User;
@@ -151,40 +149,41 @@ $attributes = [ 'make' => 'Honda', 'model' => 'Accord' ];
 $context = ContextFactory::create(CarContext::class, compact('user', 'attributes'));
 
 $context->user->id; //=> 34
-$context->make;     //=> 'Honda'
+$context->make;     //=> Honda
 ```
 
-Explicitly specifying an `'attributes'` parameter isn't necessary. Any keys in the array of source data passed to the factory that do not match the name of a parameter on the constructor will be pushed into an `'attributes'` parameter. If you provide an `'attributes'` parameter manually in addition to extra data, they'll be merged together.
+Explicitly specifying an `'attributes'` parameter isn't necessary. Any keys in the array of source data passed to the factory that do not match the name of a parameter on the constructor will be pushed into an `$attributes` parameter. If you provide an `'attributes'` parameter manually in addition to extra data, the extra data will be merged into the `$attributes` array.
 
 > **Note:** Taking advantage of this requires an `$attributes` parameter be available on the constructor of the context class being instantiated through the factory.
 
 ```php
-use App\User;
 use Deefour\Interactor\ContextFactory;
 
-$user       = User::find(34);
-$attributes = [ 'make' => 'Honda', 'model' => 'Accord' ];
-$source     = array_merge(compact('user'), $attributes, [ 'foo' => 'bar' ]);
+$user = User::find(34);
+$data = [ 'make' => 'Honda', 'model' => 'Accord' ];
 
-$context = ContextFactory::create(CarContext::class, $source);
+$context = ContextFactory::create(CarContext::class, array_merge(compact('user'), $data));
 
-$context->make; //=> 'Honda'
-$context->foo;  //=> 'bar'
+$context->make;  //=> Toyota
+$context->model; //=> Accord
+$context->foo;   //=> bar
 ```
 
 ## Status
 
-A context carries a status object. By default there is a `Success` status and an `Error` status. Contexts are given a successful status to start.
+The state of an interactor is considered passing or failing. A context holds the current state in a `$status` proprerty. This library provides a `Success` and `Error` status. Contexts are given a `Success` status by default.
 
 ### Failing the Context
 
-When something goes wrong in your interactor, you can flag the process as failed on the context.
+An interactor can be considered a failure when something goes wrong during it's execution. This is done by marking the context as having failed.
 
 ```php
 $this->context()->fail();
+```
 
-// or
+A message can be provided to explain the reason for the failure.
 
+```php
 $this->context()->fail('Some explicit error message here');
 ```
 
@@ -200,13 +199,23 @@ try {
 }
 ```
 
-$c->ok(); // true
+### Checking the Status
 
-$c->fail();
+You can ask if the state is currently successful/passing.
 
-$c->ok(); // false
+```php
+$c = $this->context();
 
-echo get_class($c->status()); //=> 'Deefour\Interactor\Status\Error'
+$c->ok();     //=> true
+$c->status(); //=> Deefour\Interactor\Status\Success
+
+try {
+    $c->fail('Oops!');
+} catch (\Deefour\Interactor\Exception\Failure $e) {
+    $c->ok();             //=> false
+    $c->status();         //=> Deefour\Interactor\Status\Error
+    (string)$c->status(); //=> Oops!
+}
 ```
 
 ## Usage
@@ -216,7 +225,7 @@ Within a controller, implementing the car creation through the `CreateCar` inter
 ```php
 public function create(CreateRequest $request)
 {
-    $context = new CarContext($request->get('make'), $request->get('model'));
+    $context = new CarContext($request->user(), $request->only('make', 'model'));
 
     (new CreateCar($context))->call();
 
@@ -224,6 +233,49 @@ public function create(CreateRequest $request)
         echo 'Wow! Nice new ' . $context->car->make;
     } else {
         echo 'ERROR: ' . $context->status()->error();
+    }
+}
+```
+
+### Dispatching Interactors
+
+A `Deefour\Interactor\DispatchesInteractors` trait can be included in any class to reduce the creation and execution of an interactor to a single method call. In the example below, this trait will
+
+ 1. Resolve a new `CarContext` instance using the provided `User`, `'make'`, and `'model'`
+ 2. Instantiate a new `CreateCar` instance with the newly created `CarContext`
+ 3. Execute the `call()` method on the interactor
+ 4. Return the context
+
+```php
+namespace App\Controllers;
+
+use App\Interactors\CreateCar;
+use App\Contexts\CarContext;
+use Deefour\Interactor\DispatchesInteractors;
+
+class CarController extends BaseController
+{
+    use DispatchesInteractors;
+
+    /**
+     * Create a new car.
+     *
+     * @param  Request $request
+     * @return string
+     */
+    public function store(Request $request)
+    {
+        $context = $this->dispatchInteractor(
+            CreateCar::class,
+            CarContext::class,
+            array_merge([ 'user' => $request->user() ], $request->only('make', 'model'))
+        );
+
+        if ($context->ok()) {
+            return 'Wow! Nice new ' . $context->car->make;
+        } else {
+            return 'ERROR: ' . $context->status()->error();
+        }
     }
 }
 ```
@@ -357,63 +409,22 @@ If a failure occurs during the execution of an organizer, `rollback()` will be c
 
 > **Note:** The `rollback()` method is **not** called when an interactor is executed on it's own, though it can be called manually by testing for failure on the context.
 
-### Dispatching Interactors
 
-Include the `Deefour\Interactor\DispatchesInteractors` trait in your controller to use the `dispatchInteractor()` method. In the example below, this trait will
-
- 1. Resolve a new `CarContext` instance using the provided `'make'` and `'model'`
- 2. Instantiate a new `CreateCar` instance with the newly created `CarContext`
- 3. Call the `call()` method on the interactor
- 4. Return the context
-
-```php
-namespace App\Controllers;
-
-use App\Interactors\CreateCar;
-use App\Contexts\CarContext;
-use Deefour\Interactor\DispatchesInteractors;
-
-class CarController extends BaseController
-{
-    use DispatchesInteractors;
-
-    /**
-     * Create a new resource.
-     *
-     * @return string
-     */
-    public function store()
-    {
-        $context = $this->dispatchInteractor(
-            CreateCar::class,
-            CarContext::class,
-            [ 'make' => 'Subaru', 'model' => 'WRX' ]
-        );
-
-        if ($context->ok()) {
-            return 'Wow! Nice new ' . $context->car->make;
-        } else {
-            return 'ERROR: ' . $context->status()->error();
-        }
-    }
-}
-```
 
 
 ### Integration With Laravel 5
 
-A job in Laravel 5 can be treated as in interactor or organizer. The `handle()` method on a job called through Laravel's command bus supports dependency injection through the [service container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor that takes advantage of dependency injection and Laravel's command bus might look like this:
+A job in Laravel 5 can be treated as in interactor or organizer. The `handle()` method on a job called through Laravel's job dispatcher supports dependency injection through the [service container](http://laravel.com/docs/master/container). An implementation of the `CreateCar` interactor that takes advantage of dependency injection and Laravel's job dispatcher might look like this:
 
 ```php
 namespace App\Jobs;
 
 use App\Car;
 use App\Contexts\CreateCarContext as CarContext;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Deefour\Interactor\Interactor;
 use Illuminate\Contracts\Redis\Database as Redis;
 
-class CreateCar extends Interactor implements SelfHandling
+class CreateCar extends Interactor
 {
     /**
      * Create a new command instance.
@@ -442,7 +453,7 @@ class CreateCar extends Interactor implements SelfHandling
 }
 ```
 
-Laravel needs to be told to to use it's own `dispatch()` method instead of the one provided by this library.
+Laravel needs to be told to to use it's own `dispatch()` method instead of the one provided by this library. This allows both interactors and vanilla Laravel jobs can be dispatched.
 
 ```php
 namespace App\Http\Controllers;
@@ -450,7 +461,7 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Deefour\Interactor\DispatchesInteractors;
 
-class CarController extends BaseController
+class Controller
 {
     use DispatchesJobs, DispatchesInteractors {
       DispatchesJobs::dispatch insteadof DispatchesInteractors;
@@ -458,7 +469,7 @@ class CarController extends BaseController
 }
 ```
 
-Your jobs continue to play nicely with Laravel, now with the added functionality of an interactor.
+> **Note:** Interactors can even implement Laravel's `Illuminate\Contracts\Queue\ShouldQueue` to have execution deferred!
 
 ## Contribute
 
@@ -466,6 +477,10 @@ Your jobs continue to play nicely with Laravel, now with the added functionality
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+#### 1.2.0 - October 16, 2016
+
+ - Exceptions can now be passed to a context's `fail()` method. A passed exception will be thrown instead of a new `Deefour\Interactor\Exception\Failure`. Thanks to [@gpassarelli](https://github.com/gpassarelli) in [#6](https://github.com/deefour/interactor/pull/6).
 
 #### 1.1.0 - October 19, 2015
 

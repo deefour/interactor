@@ -12,7 +12,7 @@ trait DispatchesInteractors
      * All failures are currently suppressed.
      *
      * @param Interactor|string $interactor
-     * @param Context|array     $context    [optional]
+     * @param Context|array     $context
      * @param array             $attributes
      *
      * @return Context
