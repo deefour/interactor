@@ -386,6 +386,49 @@ The `$this->getContext(...)` call is a convenient alternative to `$this->context
 
 Unlike a normal interactor, the `call()` method on an organizer is already implemented. When called, this organizer will perform interactors in the order they were pushed onto the queue in the `organize()` method.
 
+### Sharing an attribute between Contexts
+
+Suppose you have to retrieve the User (using a `Deefour\Interactor\Interactor`) and then share this user attribute with CreateVehicleContext. You are able to achieve this by using `share()` method from `Deefour\Interactor\CompositeContext`.
+
+```php
+use Deefour\Interactor\Organizer;
+
+class RegisterUser extends Organizer
+{
+    /**
+     * Constructor.
+     *
+     * @param RegisterUserContext $context A composite context for the organizer.
+     */
+    public function __construct(RegisterUserContext $context)
+    {
+        parent::__construct($context);
+    }
+
+    /**
+     * Create the new user and their first vehicle.
+     */
+    public function organize()
+    {
+        $createUserInteractor = new CreateUser($this->getContext(CreateUserContext::class));
+        $createUserContext = $createUserInteractor->call();
+        
+        /**
+         * Shares attribute 'user' from CreateUserContext with CreateVehicleContext.
+         */
+        $this->context()->share(
+            CreateUserContext::class,
+            CreateVehicleContext::class,
+            'user'
+        );
+        
+        $this->addInteractor(new CreateVehicle($this->getContext(CreateVehicleContext::class)));
+    }
+}
+```
+
+This way, the Interactor `CreateVehicle` is able to get the `User` from `CreateVehicleContext`, if necessary.
+
 ### Executing an Organizer
 
 An organizer is executed like any other interactor. Call the `call()` method to kick things off after instantiation.
