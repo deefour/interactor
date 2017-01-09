@@ -26,4 +26,14 @@ class Failure extends Exception
 
         parent::__construct($message);
     }
+
+    /**
+     * Context accessor.
+     *
+     * @return Context
+     */
+    public function context()
+    {
+        return $this->context;
+    }
 }
