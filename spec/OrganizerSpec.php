@@ -15,10 +15,9 @@ class OrganizerSpec extends ObjectBehavior
 {
     public function let()
     {
-        $a = new CreateUserContext('Jason', 'Daly');
-        $b = new CreateVehicleContext('Subaru', 'WRX');
-
-        $context = new RegisterUserContext($a, $b);
+        $context = new RegisterUserContext(
+            [ 'first_name' => 'Jason', 'last_name' => 'Daly'], 'VINNUMBERHERE'
+        );
 
         $this->beAnInstanceOf(RegisterUser::class);
         $this->beConstructedWith($context);
@@ -26,26 +25,35 @@ class OrganizerSpec extends ObjectBehavior
 
     public function it_calls_all_interactors()
     {
-        $this->context()->{CreateUserContext::class}->called->shouldBe(false);
+        $this->completed()->shouldHaveCount(0);
 
         $this->call();
 
-        $this->context()->{CreateUserContext::class}->called->shouldBe(true);
-        $this->context()->{CreateVehicleContext::class}->called->shouldBe(true);
+        $this->completed()->shouldHaveCount(2);
+
+        foreach ($this->completed() as $interactor) {
+            $interactor->context()->called->shouldBe(true);
+        }
     }
 
     public function it_rolls_back_on_failure()
     {
-        $this->context()->{CreateVehicleContext::class}->should_fail = true;
+        $context = new RegisterUserContext(
+            [ 'first_name' => 'Jason', 'last_name' => 'Daly'], 'invalid-format'
+        );
+
+        $this->beConstructedWith($context);
+
+        $this->completed()->shouldHaveCount(0);
 
         $this->shouldThrow(Failure::class)->during('call');
 
-        $this->context()->{CreateUserContext::class}->rolled_back->shouldBe(true);
-        $this->context()->{CreateVehicleContext::class}->rolled_back->shouldBeNull();
-        $this->context()->status()->shouldBeAnInstanceOf(Error::class);
+        $this->completed()->shouldHaveCount(1);
+
+        foreach ($this->completed() as $interactor) {
+            $interactor->context()->rolled_back->shouldBe(true);
+        }
 
         $this->context()->status()->shouldBeAnInstanceOf(Error::class);
-        $this->context()->{CreateUserContext::class}->status()->shouldBeAnInstanceOf(Success::class);
-        $this->context()->{CreateVehicleContext::class}->status()->shouldBeAnInstanceOf(Error::class);
     }
 }

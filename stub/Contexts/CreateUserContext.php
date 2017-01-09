@@ -6,15 +6,10 @@ use Deefour\Interactor\Context;
 
 class CreateUserContext extends Context
 {
-    public $firstName;
-
-    public $lastName;
-
-    public function __construct($firstName, $lastName)
+    public function __construct($first_name, $last_name)
     {
-        $this->firstName = $firstName;
-        $this->lastName  = $lastName;
-
-        parent::__construct([ 'called' => false ]);
+        parent::__construct(
+            array_merge(get_defined_vars(), [ 'called' => false ])
+        );
     }
 }

@@ -3,12 +3,16 @@
 namespace Deefour\Interactor\Stub\Interactors;
 
 use Deefour\Interactor\Interactor;
+use Deefour\Interactor\Stub\Models\User;
 
 class CreateUser extends Interactor
 {
     public function call()
     {
-        $this->context()->called = true;
+        $c = $this->context();
+
+        $c->called = true;
+        $c->user   = new User($c->first_name, $c->last_name);
     }
 
     public function rollback()

@@ -3,18 +3,19 @@
 namespace Deefour\Interactor\Stub\Contexts;
 
 use Deefour\Interactor\Context;
+use Deefour\Interactor\Stub\Models\User;
 
 class CreateVehicleContext extends Context
 {
-    public $make;
+    public $user;
 
-    public $model;
+    public $vin;
 
-    public function __construct($make, $model)
+    public function __construct(User $user, $vin)
     {
-        $this->make  = $make;
-        $this->model = $model;
-        
+        $this->user = $user;
+        $this->vin  = $vin;
+
         parent::__construct([ 'called' => false ]);
     }
 }

@@ -14,7 +14,7 @@ class CreateVehicle extends Interactor
 
     public function call()
     {
-        if ($this->context()->should_fail) {
+        if ($this->context()->vin === 'invalid-format') {
             $this->fail('Oops!');
         }
 

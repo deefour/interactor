@@ -20,13 +20,20 @@ class RegisterUser extends Organizer
     }
 
     /**
-     * {@inheritdoc}
-     *
      * Create the new user and their first vehicle.
      */
     public function organize()
     {
-        $this->addInteractor(new CreateUser($this->getContext(CreateUserContext::class)));
-        $this->addInteractor(new CreateVehicle($this->getContext(CreateVehicleContext::class)));
+        $this->enqueue(function ($context) {
+            return new CreateUser(
+                new CreateUserContext($context->user['first_name'], $context->user['last_name'])
+            );
+        });
+
+        $this->enqueue(function ($context, $previous) {
+            return new CreateVehicle(
+                new CreateVehicleContext($previous->user, $context->vin)
+            );
+        });
     }
 }

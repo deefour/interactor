@@ -2,22 +2,18 @@
 
 namespace Deefour\Interactor\Stub\Contexts;
 
-use Deefour\Interactor\CompositeContext;
+use Deefour\Interactor\Context;
 
-class RegisterUserContext extends CompositeContext
+class RegisterUserContext extends Context
 {
     /**
      * Constructor.
      *
-     * {@inheritdoc}
-     *
-     * @param CreateUserContext    $createUser
-     * @param CreateVehicleContext $createVehicle
+     * @param array $user
+     * @param array $vin
      */
-    public function __construct(
-        CreateUserContext $createUser,
-        CreateVehicleContext $createVehicle
-    ) {
-        parent::__construct(func_get_args());
+    public function __construct(array $user, $vin)
+    {
+        parent::__construct(compact('user', 'vin'));
     }
 }

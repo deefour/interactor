@@ -17,7 +17,7 @@ abstract class Organizer extends Interactor implements InteractorContract
      *
      * @var array
      */
-    protected $interactors = [];
+    protected $queue = [];
 
     /**
      * The list of interactors that completed successfully.
@@ -31,19 +31,19 @@ abstract class Organizer extends Interactor implements InteractorContract
      *
      * @param Context $context
      */
-    public function __construct(CompositeContext $context)
+    public function __construct(Context $context)
     {
         parent::__construct($context);
     }
 
     /**
-     * Push an interactor onto the stack.
+     * Push an interactor resolver onto the queue.
      *
-     * @param Interactor $interactor
+     * @param callable $resolver
      */
-    public function addInteractor(Interactor $interactor)
+    public function enqueue(callable $resolver)
     {
-        $this->interactors[] = $interactor;
+        $this->queue[] = $resolver;
     }
 
     /**
@@ -54,9 +54,15 @@ abstract class Organizer extends Interactor implements InteractorContract
         $this->organize();
         $this->completed = [];
 
+        $context = null;
+
         try {
-            foreach ($this->interactors as $interactor) {
+            foreach ($this->queue as $resolver) {
+                $interactor = $resolver($this->context(), $context);
+
                 $interactor->call();
+
+                $context = $interactor->context();
 
                 $this->completed[] = $interactor;
             }
@@ -78,6 +84,16 @@ abstract class Organizer extends Interactor implements InteractorContract
         foreach (array_reverse($this->completed) as $interactor) {
             $interactor->rollback();
         }
+    }
+
+    /**
+     * Get a list of the successfully completed interactors.
+     *
+     * @return array
+     */
+    public function completed()
+    {
+        return $this->completed;
     }
 
     /**

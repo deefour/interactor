@@ -4,6 +4,7 @@ namespace spec\Deefour\Interactor\Stub;
 
 use Deefour\Interactor\Stub\Contexts\CreateVehicleContext;
 use Deefour\Interactor\Stub\Interactors\CreateVehicle;
+use Deefour\Interactor\Stub\Models\User;
 use PhpSpec\ObjectBehavior;
 
 class BasicDispatcherSpec extends ObjectBehavior
@@ -18,7 +19,7 @@ class BasicDispatcherSpec extends ObjectBehavior
         $this->dispatchInteractor(
             CreateVehicle::class,
             CreateVehicleContext::class,
-            [ 'make' => 'Subaru', 'model' => 'WRX']
+            [ 'user' => new User('Jason', 'Daly'), 'vin' => 'VINNUMBERHERE' ]
         )->called->shouldBe(true);
     }
 }
