@@ -7,7 +7,6 @@ use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Stub\Exception\CustomFailure;
 use Deefour\Interactor\Stub\Interactors\CreateBlog;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class CreateBlogSpec extends ObjectBehavior
 {

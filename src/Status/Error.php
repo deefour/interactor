@@ -26,7 +26,7 @@ class Error extends Status
      */
     public function __construct(Context $context, $error = null)
     {
-        if (!is_null($error)) {
+        if ( ! is_null($error)) {
             $this->error = $error;
         }
 

@@ -29,7 +29,7 @@ abstract class Organizer extends Interactor implements InteractorContract
     /**
      * Constructor.
      *
-     * @param  Context $context
+     * @param Context $context
      */
     public function __construct(CompositeContext $context)
     {

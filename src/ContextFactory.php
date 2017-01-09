@@ -50,7 +50,7 @@ class ContextFactory
 
         // Create/merge a special 'attributes' parameter with the non-matching arguments
         $attributes['attributes'] = array_merge(
-            isset($attributes['attributes']) ? $attributes['attributes'] : [], 
+            isset($attributes['attributes']) ? $attributes['attributes'] : [],
             $extraAttributes
           );
 

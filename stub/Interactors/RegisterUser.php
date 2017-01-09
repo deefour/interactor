@@ -2,10 +2,10 @@
 
 namespace Deefour\Interactor\Stub\Interactors;
 
-use Deefour\Interactor\Stub\Contexts\RegisterUserContext;
+use Deefour\Interactor\Organizer;
 use Deefour\Interactor\Stub\Contexts\CreateUserContext;
 use Deefour\Interactor\Stub\Contexts\CreateVehicleContext;
-use Deefour\Interactor\Organizer;
+use Deefour\Interactor\Stub\Contexts\RegisterUserContext;
 
 class RegisterUser extends Organizer
 {

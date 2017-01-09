@@ -2,12 +2,10 @@
 
 namespace spec\Deefour\Interactor;
 
-use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Deefour\Interactor\Stub\Contexts\CreateUserContext;
 use Deefour\Interactor\Stub\Contexts\CreateVehicleContext;
 use Deefour\Interactor\Stub\Contexts\RegisterUserContext;
-use Deefour\Interactor\CompositeContext;
+use PhpSpec\ObjectBehavior;
 
 class CompositeContextSpec extends ObjectBehavior
 {

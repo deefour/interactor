@@ -36,13 +36,12 @@ class CompositeContext extends Context
      * Throw an exception if an argument does not subclass the base context.
      *
      * @throws InvalidArgumentException
-     * @param  array  $contexts
-     * @return void
+     * @param  array                    $contexts
      */
     private function verifyContexts(array $contexts)
     {
         foreach ($contexts as $context) {
-            if (!($context instanceof Context)) {
+            if ( ! ($context instanceof Context)) {
                 throw new InvalidArgumentException(
                     sprintf(
                         '[%s] expects only arguments that subclass [%s]; ' .

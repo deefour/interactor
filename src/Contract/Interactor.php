@@ -3,7 +3,6 @@
 namespace Deefour\Interactor\Contract;
 
 use App\Deefour\Interactor\Context;
-use App\Deefour\Interactor\Status\Failure;
 
 interface Interactor
 {

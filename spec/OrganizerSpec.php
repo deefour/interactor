@@ -2,16 +2,14 @@
 
 namespace spec\Deefour\Interactor;
 
-use Mockery;
-use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-use Deefour\Interactor\Stub\Interactors\RegisterUser;
-use Deefour\Interactor\Stub\Contexts\CreateUserContext;
-use Deefour\Interactor\Stub\Contexts\CreateVehicleContext;
-use Deefour\Interactor\Stub\Contexts\RegisterUserContext;
 use Deefour\Interactor\Exception\Failure;
 use Deefour\Interactor\Status\Error;
 use Deefour\Interactor\Status\Success;
+use Deefour\Interactor\Stub\Contexts\CreateUserContext;
+use Deefour\Interactor\Stub\Contexts\CreateVehicleContext;
+use Deefour\Interactor\Stub\Contexts\RegisterUserContext;
+use Deefour\Interactor\Stub\Interactors\RegisterUser;
+use PhpSpec\ObjectBehavior;
 
 class OrganizerSpec extends ObjectBehavior
 {
@@ -26,7 +24,8 @@ class OrganizerSpec extends ObjectBehavior
         $this->beConstructedWith($context);
     }
 
-    public function it_calls_all_interactors() {
+    public function it_calls_all_interactors()
+    {
         $this->context()->{CreateUserContext::class}->called->shouldBe(false);
 
         $this->call();
@@ -35,7 +34,8 @@ class OrganizerSpec extends ObjectBehavior
         $this->context()->{CreateVehicleContext::class}->called->shouldBe(true);
     }
 
-    public function it_rolls_back_on_failure() {
+    public function it_rolls_back_on_failure()
+    {
         $this->context()->{CreateVehicleContext::class}->should_fail = true;
 
         $this->shouldThrow(Failure::class)->during('call');
@@ -48,6 +48,4 @@ class OrganizerSpec extends ObjectBehavior
         $this->context()->{CreateUserContext::class}->status()->shouldBeAnInstanceOf(Success::class);
         $this->context()->{CreateVehicleContext::class}->status()->shouldBeAnInstanceOf(Error::class);
     }
-
-
 }

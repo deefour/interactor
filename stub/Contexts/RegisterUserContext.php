@@ -4,7 +4,8 @@ namespace Deefour\Interactor\Stub\Contexts;
 
 use Deefour\Interactor\CompositeContext;
 
-class RegisterUserContext extends CompositeContext {
+class RegisterUserContext extends CompositeContext
+{
     /**
      * Constructor.
      *

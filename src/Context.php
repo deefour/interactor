@@ -61,7 +61,7 @@ class Context extends MutableTransformer
      * to explain what went wrong.
      *
      * @throws Exception
-     * @param string|Exception|null $reason
+     * @param  string|Exception|null $reason
      */
     public function fail($reason = null)
     {
@@ -79,7 +79,7 @@ class Context extends MutableTransformer
     /**
      * Magic property access for public methods on the context.
      *
-     * @param string $attribute
+     * @param  string $attribute
      * @return mixed
      */
     public function __get($attribute)

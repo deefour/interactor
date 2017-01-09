@@ -20,5 +20,3 @@ class BasicInteractorSpec extends ObjectBehavior
         $this->context()->status()->__toString()->shouldReturn('This is a failure');
     }
 }
-
-

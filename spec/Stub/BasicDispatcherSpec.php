@@ -2,10 +2,9 @@
 
 namespace spec\Deefour\Interactor\Stub;
 
-use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-use Deefour\Interactor\Stub\Interactors\CreateVehicle;
 use Deefour\Interactor\Stub\Contexts\CreateVehicleContext;
+use Deefour\Interactor\Stub\Interactors\CreateVehicle;
+use PhpSpec\ObjectBehavior;
 
 class BasicDispatcherSpec extends ObjectBehavior
 {
