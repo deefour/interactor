@@ -538,4 +538,4 @@ class Controller
 
 ## License
 
-Copyright (c) 2016 [Jason Daly](http://www.deefour.me) ([deefour](https://github.com/deefour)). Released under the [MIT License](http://deefour.mit-license.org/).
+Copyright (c) 2017 [Jason Daly](http://www.deefour.me) ([deefour](https://github.com/deefour)). Released under the [MIT License](http://deefour.mit-license.org/).
