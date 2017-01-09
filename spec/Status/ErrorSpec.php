@@ -2,19 +2,21 @@
 
 namespace spec\Deefour\Interactor\Status;
 
+use Deefour\Interactor\Context;
+use Deefour\Interactor\Status\Error;
 use PhpSpec\ObjectBehavior;
 
 class ErrorSpec extends ObjectBehavior
 {
     public function let($context)
     {
-        $context->beADoubleOf('Deefour\Interactor\Context');
+        $context->beADoubleOf(Context::class);
         $this->beConstructedWith($context, 'Oops! Something went wrong.');
     }
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Deefour\Interactor\Status\Error');
+        $this->shouldHaveType(Error::class);
     }
 
     public function it_is_ok()

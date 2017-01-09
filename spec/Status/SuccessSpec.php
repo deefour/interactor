@@ -2,19 +2,21 @@
 
 namespace spec\Deefour\Interactor\Status;
 
+use Deefour\Interactor\Context;
+use Deefour\Interactor\Status\Success;
 use PhpSpec\ObjectBehavior;
 
 class SuccessSpec extends ObjectBehavior
 {
     public function let($context)
     {
-        $context->beADoubleOf('Deefour\Interactor\Context');
+        $context->beADoubleOf(Context::class);
         $this->beConstructedWith($context);
     }
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Deefour\Interactor\Status\Success');
+        $this->shouldHaveType(Success::class);
     }
 
     public function it_is_ok()
