@@ -4,9 +4,6 @@ namespace spec\Deefour\Interactor;
 
 use Deefour\Interactor\Exception\Failure;
 use Deefour\Interactor\Status\Error;
-use Deefour\Interactor\Status\Success;
-use Deefour\Interactor\Stub\Contexts\CreateUserContext;
-use Deefour\Interactor\Stub\Contexts\CreateVehicleContext;
 use Deefour\Interactor\Stub\Contexts\RegisterUserContext;
 use Deefour\Interactor\Stub\Interactors\RegisterUser;
 use PhpSpec\ObjectBehavior;
