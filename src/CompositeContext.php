@@ -32,6 +32,25 @@ class CompositeContext extends Context
     }
 
     /**
+     * Shares $attribute from $contextSrc with $contextDest
+     *
+     * @param  string $contextSrc   The context FQCN to get $attribute from (source)
+     * @param  string $contextDest  The context FQCN to share $attribute with (destination)
+     * @param  string $attribute    The attribute name as a string
+     *
+     * @return void
+     */
+    public function share($contextSrc, $contextDest, $attribute)
+    {
+        $contextSrc  = $this->get($contextSrc);
+        $contextDest = $this->get($contextDest);
+
+        if (isset($contextSrc) && isset($contextDest) && isset($contextSrc->{$attribute})) {
+            $contextDest->{$attribute}($contextSrc->{$attribute});
+        }
+    }
+
+    /**
      * Type-check each context in the source array provided to the composite.
      * Throw an exception if an argument does not subclass the base context.
      *
