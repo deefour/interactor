@@ -2,20 +2,17 @@ language: php
 
 sudo: false
 
-php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
-
 matrix:
-  allow_failures:
-    - php: hhvm
-    - php: 7.0
   fast_finish: true
+  include:
+    - php: 5.6
+    - php: 7.0
+    - php: 7.1
+    - php: hhvm-3.9
+      sudo: required
+      dist: trusty
+      group: edge
 
-sudo: false
-
-install: travis_retry composer install --no-interaction --prefer-source
+install: travis_retry composer install --no-interaction --no-progress --optimize-autoloader
 
 script: vendor/bin/phpspec run -v

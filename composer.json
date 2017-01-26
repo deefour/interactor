@@ -5,7 +5,7 @@
   "keywords": ["interactor", "deefour", "service object", "dto", "laravel"],
   "license": "MIT",
   "require": {
-    "php": ">=5.5.0",
+    "php": ">=5.6.0",
     "deefour/transformer": "^1.0.2"
   },
   "require-dev": {
