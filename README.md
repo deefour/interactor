@@ -282,119 +282,57 @@ class CarController extends BaseController
 
 ## Organizers
 
-Complex scenarios may require the use of multiple interactors in sequence. If a registration form asks for a user's email, password, and VIN of their car, the submission will register a new user account and create a new vehicle for the user based on the VIN. These two actions are best broken up into a `CreateUser` and a `CreateVehicle` interactor. An organizer can be used to queue multiple interactors together.
-
-An organizer will run through each interactor it is composed of in the order they are added. If an interactor fails, the organizer will also be considered failed, and an attempt will be made to rollback the actions performed in reverse order. The rollback will **not** be performed on the failing interactor.
-
-### Combining Contexts via a CompositeContext
-
-A composite context extends from the main `Deefour\Interactor\Context` class that expects to be initialized with one or more other contexts. It provides a special mapping during initialization between the passed context objects and their FQCN.
-
-In the example above, the `CreateUser` and `CreateVehicle` interactors will respectively require a `CreateUserContext` and `CreateVehicleContext`.
-
-```php
-use Deefour\Interactor\Context;
-
-class CreateUserContext extends Context
-{
-    /**
-     * Constructor.
-     *
-     * @param User   $user
-     * @param string $vin
-     * @param array  $attributes
-     */
-    public function __construct(User $user, array $attributes)
-    {
-        parent::__construct($user, $attributes);
-    }
-}
-```
-
-```php
-use Deefour\Interactor\Context;
-
-class CreateVehicleContext extends Context
-{
-    /**
-     * Constructor.
-     *
-     * @param string $vin The vin number for the vehicle.
-     * @param array $attributes Additional attributes
-     */
-    public function __construct($vin, array $attributes)
-    {
-        parent::__construct(array_merge($attributes, compact('vin')));
-    }
-}
-```
-
-
-The `RegisterUser` organizer expects an instance of `RegisterUserContext`, a composite context.
-
-```php
-use Deefour\Interactor\CompositeContext;
-
-class RegisterUserContext extends CompositeContext
-{
-    /**
-     * Constructor.
-     *
-     * @param CreateUserContext    $createUser
-     * @param CreateVehicleContext $createVehicle
-     */
-    public function __construct(
-        CreateUserContext $createUser,
-        CreateVehicleContext $createVehicle
-    ) {
-        parent::__construct(func_get_args());
-    }
-}
-```
+Complex scenarios may require the use of multiple interactors in sequence. If a registration form asks for a user's email, password, and VIN of their car, the submission might register a new user account and create a new vehicle for the user based on the VIN. These two actions are best broken up into `CreateUser` and `CreateVehicle` interactors. An organizer can be used to manage the execution of these interactors.
 
 ### Combining Interactors via an Organizer
 
-To create an organizer, extend `Deefour\Interactor\Organizer`, typehint a composite context on the constructor, and implement an `organize()` method that pushes interactors onto the queue.
+To create an organizer, extend `Deefour\Interactor\Organizer` and implement an `organize()` method that pushes interactors onto the queue. The `call()` method for an organizer is implemented by the library. Like a standard interactor, an organizer can require a specific context by type-hinting the constructor.
 
 ```php
 use Deefour\Interactor\Organizer;
 
 class RegisterUser extends Organizer
 {
-    /**
-     * Constructor.
-     *
-     * @param RegisterUserContext $context A composite context for the organizer.
-     */
     public function __construct(RegisterUserContext $context)
     {
         parent::__construct($context);
     }
 
-    /**
-     * Create the new user and their first vehicle.
-     */
     public function organize()
     {
-        $this->addInteractor(new CreateUser($this->getContext(CreateUserContext::class)));
-        $this->addInteractor(new CreateVehicle($this->getContext(CreateVehicleContext::class)));
+        $this->enqueue(function ($context) {
+            return new CreateUser(
+                new CreateUserContext($context->user['first_name'], $context->user['last_name'])
+            );
+        });
+        
+        $this->enqueue(function ($context, $previous) {
+            return new CreateVehicle(
+                new CreateVehicleContext($previous->user, $context->vin)
+            );
+        });
     }
 }
 ```
 
-The `$this->getContext(...)` call is a convenient alternative to `$this->context()->get(...)`.
+The `enqueue()` method accepts a `callable` which should return an interactor instance. The callables are executed in a first-in-first-out manner. Each callable receives the organizer's context along with the context of the previously executed interactor.
 
-Unlike a normal interactor, the `call()` method on an organizer is already implemented. When called, this organizer will perform interactors in the order they were pushed onto the queue in the `organize()` method.
+The deferred instantiation allows for information only available after the execution of a previous interactor to be used when creating the current interactor.
 
 ### Executing an Organizer
 
 An organizer is executed like any other interactor. Call the `call()` method to kick things off after instantiation.
 
 ```php
-$context = new RegisterUserContext(
-    new CreateUserContext($request->all()),
-    new CreateVehicleContext($request->get('vin'))
-);
+$params = [
+    'user' => [
+        'first_name' => 'Jason',
+        'last_name'  => 'Daly',
+    ],
+    'vin' => 'VINNUMBERHERE',
+];
+
+$context = new RegisterUserContext($params['user'], $params['vin']);
 
 (new RegisterUser($context))->call();
 ```
@@ -404,9 +342,6 @@ $context = new RegisterUserContext(
 If a failure occurs during the execution of an organizer, `rollback()` will be called on each interactor that ran successfully prior to the failure, in reverse order. Override the empty `rollback()` method on `Deefour\Interactor\Interactor` to take advantage of this.
 
 > **Note:** The `rollback()` method is **not** called when an interactor is executed on it's own, though it can be called manually by testing for failure on the context.
-
-
-
 
 ### Integration With Laravel 5
 
@@ -473,6 +408,10 @@ class Controller
 - Source Code: https://github.com/deefour/interactor
 
 ## Changelog
+
+#### 2.0.0 - January 26, 2017
+
+ - Rewritten API for organizers.
 
 #### 1.2.0 - October 16, 2016
 
