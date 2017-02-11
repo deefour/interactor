@@ -67,7 +67,7 @@ $rules = [
 ];
 
 $finder = PhpCsFixer\Finder::create()
-    ->in([ 'src', 'spec' , 'stub' ]);
+    ->in([ 'src', 'stub', 'spec' ]);
 
 return PhpCsFixer\Config::create()
     ->setRules($rules)
