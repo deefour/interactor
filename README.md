@@ -368,16 +368,27 @@ class CreateCar extends Interactor
     }
 
     /**
-     * Execute the command.
+     * Executes the command.
      *
      * @return void
      */
-    public function handle(Redis $redis)
+    public function call(Redis $redis)
     {
         $c      = $this->context();
         $c->car = Car::create($c->only('make', 'model'));
-
+ 
         $redis->publish('A new' . (string)$c->car . ' was just added to the lot!');
+
+    }
+
+    /**
+     * Handles the command.
+     *
+     * @return Deefour\Interactor\Context
+     */
+    public function handle(Redis $redis)
+    {
+        $this->call($redis);
 
         return $this->context();
     }
