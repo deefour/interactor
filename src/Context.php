@@ -68,7 +68,7 @@ class Context extends MutableTransformer
         if ($reason instanceof Exception) {
             $this->status = new Error($this, $reason->getMessage());
 
-            throw new $reason;
+            throw $reason;
         }
 
         $this->status = new Error($this, $reason);
